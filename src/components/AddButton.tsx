@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
-import { BorderRadius, Colors, Spacing, Typography } from '../constants/theme';
+import { BorderRadius, Colors, Spacing} from '../constants/theme';
+import { Typography } from '@/constants/typography';
 
 export interface AddButtonProps {
   /** Press handler */

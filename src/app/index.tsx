@@ -9,8 +9,9 @@ import { QuantityStepper } from '@/components/QuantityStepper';
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View, ViewToken } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BorderRadius, Colors, Spacing, Typography } from '../constants/theme';
+import { BorderRadius, Colors, Spacing, } from '../constants/theme';
 import { Image } from 'expo-image';
+import { Typography } from '@/constants/typography';
 
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
