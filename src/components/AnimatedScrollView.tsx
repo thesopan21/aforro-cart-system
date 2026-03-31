@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { ScrollView, ScrollViewProps, StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
   Extrapolate,
+  Extrapolation,
   interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -58,7 +59,7 @@ export const AnimatedScrollView: React.FC<AnimatedScrollViewProps> = ({
       scrollY.value,
       [0, headerFadeThreshold],
       [0, -20],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return {
