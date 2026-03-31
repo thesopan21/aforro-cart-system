@@ -6,12 +6,14 @@ import { Header } from '@/components/Header';
 import { IconButton } from '@/components/IconButton';
 import { OptionButton } from '@/components/OptionButton';
 import { QuantityStepper } from '@/components/QuantityStepper';
+import { ProductOptionsBottomSheet, ProductOption } from '@/components/ProductOptionsBottomSheet';
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View, ViewToken } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BorderRadius, Colors, Spacing, } from '../constants/theme';
 import { Image } from 'expo-image';
 import { Typography } from '@/constants/typography';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
@@ -33,6 +35,45 @@ export default function HomeScreen() {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const imageCarouselRef = useRef<FlatList>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // Sample product options
+  const productOptions: ProductOption[] = [
+    {
+      id: '1',
+      name: 'Dairy milk Silk Chocolate Bar - 64g',
+      price: 444,
+      originalPrice: 550,
+      weight: '64 g',
+      available: true,
+    },
+    {
+      id: '2',
+      name: 'Dairy milk Silk Chocolate Bar - 128g',
+      price: 850,
+      originalPrice: 1000,
+      weight: '128 g',
+      available: true,
+    },
+    {
+      id: '3',
+      name: 'Dairy milk Silk Chocolate Bar - 256g',
+      price: 1600,
+      originalPrice: 1900,
+      weight: '256 g',
+      available: false,
+    },
+  ];
+
+  const handleOpenBottomSheet = () => {
+    bottomSheetRef.current?.expand();
+  };
+
+  const handleSelectOption = (option: ProductOption, quantity: number) => {
+    console.log('Selected option:', option, 'Quantity:', quantity);
+    bottomSheetRef.current?.close();
+    // Add your logic here (e.g., add to cart)
+  };
 
   // Product images array
   const productImages = [
@@ -100,29 +141,29 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Header
-        title="Dairy milk silk chocolate abcdefghitg..."
-        leftIcon={
-          <IconButton
-            name="back"
-            size={24}
-            color={Colors.text}
-            onPress={() => console.log('Back pressed')}
-          />
-        }
-        rightIcon={
-          <IconButton
-            name="share"
-            size={24}
-            color={Colors.text}
-            onPress={() => console.log('Share pressed')}
-          />
-        }
-      />
-      <AnimatedScrollView
-        enableHeaderFade={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        <Header
+          title="Dairy milk silk chocolate abcdefghitg..."
+          leftIcon={
+            <IconButton
+              name="back"
+              size={24}
+              color={Colors.text}
+              onPress={() => console.log('Back pressed')}
+            />
+          }
+          rightIcon={
+            <IconButton
+              name="share"
+              size={24}
+              color={Colors.text}
+              onPress={() => console.log('Share pressed')}
+            />
+          }
+        />
+        <AnimatedScrollView
+          enableHeaderFade={false}
+          contentContainerStyle={styles.scrollContent}
+        >
         {/* Main Product Card */}
         <CardWrapper
           style={styles.mainProductCard}
@@ -198,7 +239,7 @@ export default function HomeScreen() {
             {/* Option Button */}
             <OptionButton
               text="2 options"
-              onPress={() => console.log('Options pressed')}
+              onPress={handleOpenBottomSheet}
             />
           </View>
           {/* Quantity Stepper Example */}
@@ -254,7 +295,7 @@ export default function HomeScreen() {
                 {/* Options Button */}
                 <OptionButton
                   text="2 options"
-                  onPress={() => console.log('Options pressed:', product.id)}
+                  onPress={handleOpenBottomSheet}
                   fullWidth
                   variant="primary"
                 />
@@ -276,6 +317,14 @@ export default function HomeScreen() {
           </CardWrapper>
         </View>
       </AnimatedScrollView>
+
+      {/* Bottom Sheet for Product Options */}
+      <ProductOptionsBottomSheet
+        ref={bottomSheetRef}
+        title="Select Size"
+        options={productOptions}
+        onSelectOption={handleSelectOption}
+      />
     </SafeAreaView>
   );
 }

@@ -8,7 +8,8 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { Colors, Spacing, Typography } from '../constants/theme';
+import { Colors, Spacing } from '../constants/theme';
+import { Typography } from '@/constants/typography';
 
 export interface HeaderProps {
   /** Header title text */
