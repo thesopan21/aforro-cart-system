@@ -4,25 +4,32 @@ import { CartItem, CartItemCard } from '@/components/CartItemCard';
 import { CashbackBanner } from '@/components/CashbackBanner';
 import { Coupon, CouponCard } from '@/components/CouponCard';
 import { DeliveryChip } from '@/components/DeliveryChip';
+import { DeliveryInfoBanner, DeliveryType } from '@/components/DeliveryInfoBanner';
 import { Header } from '@/components/Header';
 import { IconButton } from '@/components/IconButton';
 import { PriceRow } from '@/components/PriceRow';
 import { RecommendationCard, RecommendationProduct } from '@/components/RecommendationCard';
 import { SavingsBanner } from '@/components/SavingsBanner';
 import { Typography } from '@/constants/typography';
+import { useAuth } from '@/hooks/useAuth';
+import { ServiceabilityStatus, useServiceability } from '@/hooks/useServiceability';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Shadows, Spacing } from '../constants/theme';
 
 const CartScreen = () => {
   const router = useRouter();
   const addressBottomSheetRef = useRef<BottomSheet>(null);
+  const { checkServiceability, loading: checkingServiceability } = useServiceability();
+  const { isLoggedIn, login } = useAuth();
 
   // Selected delivery address
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
+  const [serviceabilityStatus, setServiceabilityStatus] = useState<ServiceabilityStatus | null>(null);
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>('instant'); // 'instant' or 'slot'
 
   // Sample cart items data
   const [cartItems, setCartItems] = useState<CartItem[]>([
@@ -209,25 +216,76 @@ const CartScreen = () => {
     addressBottomSheetRef.current?.expand();
   };
 
-  const handleAddressAdd = (address: SavedAddress) => {
-    setSelectedAddress(address);
-    addressBottomSheetRef.current?.close();
+  const handleLogin = async () => {
+    // In production, open login modal/screen
+    Alert.alert(
+      'Login Required',
+      'Please login to continue with checkout',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Login',
+          onPress: async () => {
+            // Simulate login
+            const result = await login('9876543210');
+            if (result.success) {
+              Alert.alert('Success', 'Logged in successfully');
+            }
+          },
+        },
+      ]
+    );
   };
 
-  const handleAddressSelect = (address: SavedAddress) => {
+  const handleAddressAdd = async (address: SavedAddress) => {
     setSelectedAddress(address);
     addressBottomSheetRef.current?.close();
-  };
 
-  // Auto-open bottom sheet on mount if no address selected
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!selectedAddress) {
-        addressBottomSheetRef.current?.expand();
+    // ALWAYS check serviceability regardless of login status
+    const status = await checkServiceability(address.address, address.coordinates);
+    setServiceabilityStatus(status);
+
+    // Determine delivery type based on serviceability (only if logged in)
+    if (isLoggedIn && status.isServiceable) {
+      // In production, this would come from API/product data
+      if (status.estimatedDeliveryTime) {
+        setDeliveryType('instant');
+      } else {
+        setDeliveryType('slot');
       }
-    }, 500); // Delay to ensure component is mounted
+    }
+  };
 
-    return () => clearTimeout(timer);
+  const handleAddressSelect = async (address: SavedAddress) => {
+    setSelectedAddress(address);
+    addressBottomSheetRef.current?.close();
+
+    // ALWAYS check serviceability regardless of login status
+    const status = await checkServiceability(address.address, address.coordinates);
+    setServiceabilityStatus(status);
+
+    // Determine delivery type based on serviceability (only if logged in)
+    if (isLoggedIn && status.isServiceable) {
+      if (status.estimatedDeliveryTime) {
+        setDeliveryType('instant');
+      } else {
+        setDeliveryType('slot');
+      }
+    }
+  };
+
+  // Auto-open bottom sheet on mount if no address selected (regardless of login)
+  useEffect(() => {
+    if (!selectedAddress) {
+      const timer = setTimeout(() => {
+        addressBottomSheetRef.current?.expand();
+      }, 500); // Delay to ensure component is mounted
+
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   return (
@@ -347,53 +405,28 @@ const CartScreen = () => {
           cashbackPercentage={1}
           style={styles.cashbackBanner}
         />
+      </ScrollView>
 
-        {/* Delivery Address Section */}
-        <View style={styles.deliveryAddressSection}>
-          <View style={styles.deliveryAddressHeader}>
-            <Text style={styles.iconEmoji}>📍</Text>
-            <Text style={styles.deliveryAddressTitle}>
-              Where would you like us to deliver?
-            </Text>
-          </View>
+      {/* Delivery Info Banner - Fixed below header */}
+      <DeliveryInfoBanner
+        hasAddress={!!selectedAddress}
+        isServiceable={serviceabilityStatus?.isServiceable ?? null}
+        isLoggedIn={isLoggedIn}
+        deliveryType={deliveryType}
+        addressType={selectedAddress?.type}
+        address={selectedAddress?.address}
+        estimatedTime={serviceabilityStatus?.estimatedDeliveryTime}
+        onAddAddress={handleOpenAddressBottomSheet}
+        onChangeAddress={handleOpenAddressBottomSheet}
+        onLogin={handleLogin}
+      />
 
-          {selectedAddress ? (
-            <Pressable
-              style={({ pressed }) => [
-                styles.selectedAddressCard,
-                pressed && styles.selectedAddressCardPressed,
-              ]}
-              onPress={handleOpenAddressBottomSheet}
-            >
-              <View style={styles.addressInfo}>
-                <View style={styles.addressTypeContainer}>
-                  <Text style={styles.iconEmojiSmall}>🏠</Text>
-                  <Text style={styles.addressType}>{selectedAddress.title}</Text>
-                </View>
-                <Text style={styles.addressText} numberOfLines={2}>
-                  {selectedAddress.address}
-                </Text>
-                {selectedAddress.landmark && (
-                  <Text style={styles.landmarkText}>
-                    Landmark: {selectedAddress.landmark}
-                  </Text>
-                )}
-              </View>
-              <Text style={styles.changeText}>Change</Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              style={({ pressed }) => [
-                styles.addAddressButton,
-                pressed && styles.addAddressButtonPressed,
-              ]}
-              onPress={handleOpenAddressBottomSheet}
-            >
-              <Text style={styles.addAddressButtonText}>Add address</Text>
-            </Pressable>
-          )}
-        </View>
-
+      {/* Scrollable Content Below Delivery Banner */}
+      <ScrollView
+        style={styles.deliveryInstructionsScroll}
+        contentContainerStyle={styles.deliveryInstructionsContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Delivery Instructions Section */}
         <View style={styles.deliverySection}>
           <Text style={styles.sectionTitle}>Delivery instructions</Text>
@@ -477,6 +510,36 @@ const CartScreen = () => {
         </View>
       </ScrollView>
 
+      {/* Proceed Button - Fixed at bottom */}
+      <View style={styles.proceedContainer}>
+        <View style={styles.proceedTopSection}>
+          <View>
+            <Text style={styles.toPayLabel}>To Pay</Text>
+            <Text style={styles.toPayAmount}>₹444</Text>
+          </View>
+          <Pressable
+            style={({ pressed }) => [
+              styles.proceedButton,
+              // Disable if: no address OR not serviceable
+              (!selectedAddress || serviceabilityStatus?.isServiceable === false) && styles.proceedButtonDisabled,
+              pressed && styles.proceedButtonPressed,
+            ]}
+            disabled={!selectedAddress || serviceabilityStatus?.isServiceable === false}
+            onPress={() => {
+              if (!isLoggedIn) {
+                handleLogin();
+              } else {
+                console.log('Proceed to checkout');
+              }
+            }}
+          >
+            <Text style={styles.proceedButtonText}>
+              {!isLoggedIn ? 'Login to continue' : 'Proceed'}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+
       {/* Address Bottom Sheet */}
       <AddressBottomSheet
         ref={addressBottomSheetRef}
@@ -503,7 +566,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xl,
+    paddingBottom: 120, // Extra padding for fixed proceed button
   },
   savingsBanner: {
     marginBottom: Spacing.lg,
@@ -589,91 +652,13 @@ const styles = StyleSheet.create({
   cashbackBanner: {
     marginBottom: Spacing.lg,
   },
-  deliveryAddressSection: {
-    marginBottom: Spacing.lg,
-    backgroundColor: '#FFFFFF',
-    padding: Spacing.lg,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  deliveryAddressHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  iconEmoji: {
-    fontSize: 24,
-  },
-  iconEmojiSmall: {
-    fontSize: 16,
-  },
-  deliveryAddressTitle: {
-    ...Typography.body,
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text,
+  deliveryInstructionsScroll: {
     flex: 1,
   },
-  addAddressButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: Spacing.md,
+  deliveryInstructionsContent: {
     paddingHorizontal: Spacing.lg,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  addAddressButtonPressed: {
-    opacity: 0.8,
-  },
-  addAddressButtonText: {
-    ...Typography.body,
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  selectedAddressCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.md,
-  },
-  selectedAddressCardPressed: {
-    opacity: 0.7,
-  },
-  addressInfo: {
-    flex: 1,
-  },
-  addressTypeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    marginBottom: Spacing.xs,
-  },
-  addressType: {
-    ...Typography.body,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.primary,
-    textTransform: 'uppercase',
-  },
-  addressText: {
-    ...Typography.body,
-    fontSize: 14,
-    color: Colors.text,
-    lineHeight: 20,
-    marginBottom: Spacing.xs,
-  },
-  landmarkText: {
-    ...Typography.body,
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  changeText: {
-    ...Typography.body,
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.primary,
+    paddingTop: Spacing.md,
+    paddingBottom: 120, // Extra padding for fixed proceed button
   },
   deliverySection: {
     marginBottom: Spacing.lg,
@@ -736,6 +721,64 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.textSecondary,
     lineHeight: 20,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  loadingText: {
+    ...Typography.body,
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  proceedContainer: {
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    ...Shadows.small,
+  },
+  proceedTopSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  toPayLabel: {
+    ...Typography.body,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginBottom: 4,
+  },
+  toPayAmount: {
+    ...Typography.body,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.text,
+  },
+  proceedButton: {
+    backgroundColor: Colors.primary,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl * 2,
+    borderRadius: 8,
+    minWidth: 150,
+    alignItems: 'center',
+  },
+  proceedButtonDisabled: {
+    backgroundColor: Colors.border,
+    opacity: 0.5,
+  },
+  proceedButtonPressed: {
+    opacity: 0.8,
+  },
+  proceedButtonText: {
+    ...Typography.body,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
 
