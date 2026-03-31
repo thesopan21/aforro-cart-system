@@ -1,3 +1,4 @@
+import { AddressBottomSheet, SavedAddress } from '@/components/AddressBottomSheet';
 import { AlertBanner } from '@/components/AlertBanner';
 import { CartItem, CartItemCard } from '@/components/CartItemCard';
 import { CashbackBanner } from '@/components/CashbackBanner';
@@ -9,14 +10,19 @@ import { PriceRow } from '@/components/PriceRow';
 import { RecommendationCard, RecommendationProduct } from '@/components/RecommendationCard';
 import { SavingsBanner } from '@/components/SavingsBanner';
 import { Typography } from '@/constants/typography';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Shadows, Spacing } from '../constants/theme';
 
 const CartScreen = () => {
   const router = useRouter();
+  const addressBottomSheetRef = useRef<BottomSheet>(null);
+
+  // Selected delivery address
+  const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
 
   // Sample cart items data
   const [cartItems, setCartItems] = useState<CartItem[]>([
@@ -199,6 +205,31 @@ const CartScreen = () => {
     );
   };
 
+  const handleOpenAddressBottomSheet = () => {
+    addressBottomSheetRef.current?.expand();
+  };
+
+  const handleAddressAdd = (address: SavedAddress) => {
+    setSelectedAddress(address);
+    addressBottomSheetRef.current?.close();
+  };
+
+  const handleAddressSelect = (address: SavedAddress) => {
+    setSelectedAddress(address);
+    addressBottomSheetRef.current?.close();
+  };
+
+  // Auto-open bottom sheet on mount if no address selected
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!selectedAddress) {
+        addressBottomSheetRef.current?.expand();
+      }
+    }, 500); // Delay to ensure component is mounted
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header Section */}
@@ -317,6 +348,52 @@ const CartScreen = () => {
           style={styles.cashbackBanner}
         />
 
+        {/* Delivery Address Section */}
+        <View style={styles.deliveryAddressSection}>
+          <View style={styles.deliveryAddressHeader}>
+            <Text style={styles.iconEmoji}>📍</Text>
+            <Text style={styles.deliveryAddressTitle}>
+              Where would you like us to deliver?
+            </Text>
+          </View>
+
+          {selectedAddress ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.selectedAddressCard,
+                pressed && styles.selectedAddressCardPressed,
+              ]}
+              onPress={handleOpenAddressBottomSheet}
+            >
+              <View style={styles.addressInfo}>
+                <View style={styles.addressTypeContainer}>
+                  <Text style={styles.iconEmojiSmall}>🏠</Text>
+                  <Text style={styles.addressType}>{selectedAddress.title}</Text>
+                </View>
+                <Text style={styles.addressText} numberOfLines={2}>
+                  {selectedAddress.address}
+                </Text>
+                {selectedAddress.landmark && (
+                  <Text style={styles.landmarkText}>
+                    Landmark: {selectedAddress.landmark}
+                  </Text>
+                )}
+              </View>
+              <Text style={styles.changeText}>Change</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              style={({ pressed }) => [
+                styles.addAddressButton,
+                pressed && styles.addAddressButtonPressed,
+              ]}
+              onPress={handleOpenAddressBottomSheet}
+            >
+              <Text style={styles.addAddressButtonText}>Add address</Text>
+            </Pressable>
+          )}
+        </View>
+
         {/* Delivery Instructions Section */}
         <View style={styles.deliverySection}>
           <Text style={styles.sectionTitle}>Delivery instructions</Text>
@@ -399,6 +476,13 @@ const CartScreen = () => {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Address Bottom Sheet */}
+      <AddressBottomSheet
+        ref={addressBottomSheetRef}
+        onAddressAdd={handleAddressAdd}
+        onAddressSelect={handleAddressSelect}
+      />
     </SafeAreaView>
   );
 };
@@ -504,6 +588,92 @@ const styles = StyleSheet.create({
   },
   cashbackBanner: {
     marginBottom: Spacing.lg,
+  },
+  deliveryAddressSection: {
+    marginBottom: Spacing.lg,
+    backgroundColor: '#FFFFFF',
+    padding: Spacing.lg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  deliveryAddressHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  iconEmoji: {
+    fontSize: 24,
+  },
+  iconEmojiSmall: {
+    fontSize: 16,
+  },
+  deliveryAddressTitle: {
+    ...Typography.body,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text,
+    flex: 1,
+  },
+  addAddressButton: {
+    backgroundColor: Colors.primary,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  addAddressButtonPressed: {
+    opacity: 0.8,
+  },
+  addAddressButtonText: {
+    ...Typography.body,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  selectedAddressCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  selectedAddressCardPressed: {
+    opacity: 0.7,
+  },
+  addressInfo: {
+    flex: 1,
+  },
+  addressTypeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.xs,
+  },
+  addressType: {
+    ...Typography.body,
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.primary,
+    textTransform: 'uppercase',
+  },
+  addressText: {
+    ...Typography.body,
+    fontSize: 14,
+    color: Colors.text,
+    lineHeight: 20,
+    marginBottom: Spacing.xs,
+  },
+  landmarkText: {
+    ...Typography.body,
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
+  changeText: {
+    ...Typography.body,
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
   },
   deliverySection: {
     marginBottom: Spacing.lg,
