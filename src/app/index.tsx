@@ -1,12 +1,16 @@
 
-import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { BorderRadius, Colors, Spacing, Typography } from '../constants/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedScrollView } from '@/components/AnimatedScrollView';
 import { CardWrapper } from '@/components/CardWrapper';
+import { DiscountBadge } from '@/components/DiscountBadge';
 import { Header } from '@/components/Header';
 import { IconButton } from '@/components/IconButton';
+import { OptionButton } from '@/components/OptionButton';
+import { QuantityStepper } from '@/components/QuantityStepper';
+import React, { useCallback, useRef, useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, View, ViewToken } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BorderRadius, Colors, Spacing, Typography } from '../constants/theme';
+import { Image } from 'expo-image';
 
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
@@ -25,6 +29,40 @@ interface Product {
 }
 
 export default function HomeScreen() {
+  const [quantity, setQuantity] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const imageCarouselRef = useRef<FlatList>(null);
+
+  // Product images array
+  const productImages = [
+    'https://via.placeholder.com/300/6A1B9A/FFFFFF?text=Image+1',
+    'https://via.placeholder.com/300/7B1FA2/FFFFFF?text=Image+2',
+    'https://via.placeholder.com/300/8E24AA/FFFFFF?text=Image+3',
+    'https://via.placeholder.com/300/9C27B0/FFFFFF?text=Image+4',
+    'https://via.placeholder.com/300/AB47BC/FFFFFF?text=Image+5',
+  ];
+
+  // Handle viewable items change for pagination
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems.length > 0 && viewableItems[0].index !== null) {
+      setCurrentImageIndex(viewableItems[0].index);
+    }
+  }, []);
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 10,
+    minimumViewTime: 100,
+  }).current;
+
+  // Fallback handler for scroll end to ensure last item is detected
+  const handleScrollEnd = useCallback((event: any) => {
+    const scrollPosition = event.nativeEvent.contentOffset.x;
+    const index = Math.round(scrollPosition / 200);
+    if (index >= 0 && index < productImages.length) {
+      setCurrentImageIndex(index);
+    }
+  }, [productImages.length]);
+
   const mainProduct: Product = {
     id: '1',
     name: 'Dairy milk Silk Chocolate Bar',
@@ -91,59 +129,112 @@ export default function HomeScreen() {
           padding={Spacing.lg}
         >
           {/* Discount Badge */}
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>{mainProduct.discount}%</Text>
-            <Text style={styles.discountText}>OFF</Text>
-          </View>
-
-          {/* Product Image */}
-          <Image
-            source={{ uri: mainProduct.image }}
-            style={styles.productImage}
-            resizeMode="contain"
+          <DiscountBadge
+            discount={mainProduct.discount}
+            size="large"
           />
+
+          {/* Product Image Carousel */}
+          <View style={styles.imageCarouselContainer}>
+            <FlatList
+              ref={imageCarouselRef}
+              data={productImages}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <Image
+                  source={{ uri: item }}
+                  style={styles.productImage}
+                  contentFit="contain"
+                />
+              )}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              onMomentumScrollEnd={handleScrollEnd}
+              getItemLayout={(data, index) => ({
+                length: 200,
+                offset: 200 * index,
+                index,
+              })}
+            />
+
+            {/* Pagination Dots */}
+            <View style={styles.paginationContainer}>
+              {productImages.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.paginationDot,
+                    currentImageIndex === index && styles.paginationDotActive,
+                  ]}
+                />
+              ))}
+            </View>
+          </View>
 
           {/* Product Details */}
           <Text style={styles.brandText}>{mainProduct.brand}</Text>
           <Text style={styles.productName}>{mainProduct.name}</Text>
-          <Text style={styles.weight}>{mainProduct.weight}</Text>
+          <View style={{ 
+            flexDirection: 'row', 
+            gap: Spacing.sm, 
+            alignItems: 'center' ,
+            justifyContent: 'space-between',
+            }}>
+            <View style={{
+              justifyContent: 'center',
+            }}>
+              <Text style={styles.weight}>{mainProduct.weight}</Text>
+              {/* Price Section */}
+              <View style={styles.priceContainer}>
+                <Text style={styles.price}>₹{mainProduct.price}</Text>
+                <Text style={styles.originalPrice}>₹{mainProduct.originalPrice}</Text>
+              </View>
+            </View>
 
-          {/* Price Section */}
-          <View style={styles.priceContainer}>
-            <Text style={styles.price}>₹{mainProduct.price}</Text>
-            <Text style={styles.originalPrice}>₹{mainProduct.originalPrice}</Text>
+            {/* Option Button */}
+            <OptionButton
+              text="2 options"
+              onPress={() => console.log('Options pressed')}
+            />
           </View>
-
-          {/* Add to Cart Button */}
-          <Pressable style={styles.addButton}>
-            <Text style={styles.addButtonText}>2 options</Text>
-          </Pressable>
+          {/* Quantity Stepper Example */}
+          {/* <View style={styles.quantitySection}>
+            <QuantityStepper
+              value={quantity}
+              onIncrease={() => setQuantity(quantity + 1)}
+              onDecrease={() => setQuantity(quantity - 1)}
+              min={1}
+              max={10}
+              size="medium"
+            />
+          </View> */}
         </CardWrapper>
 
         {/* Similar Products Section */}
-        <View style={styles.section}>
+        <CardWrapper style={styles.section} padding={Spacing.lg}>
           <Text style={styles.sectionTitle}>Similar product</Text>
 
-          <View style={styles.horizontalScroll}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContent}
+          >
             {similarProducts.map((product) => (
-              <CardWrapper
+              <View
                 key={product.id}
                 style={styles.productCard}
-                onPress={() => console.log('Product pressed:', product.id)}
-                shadowSize="small"
-                padding={Spacing.sm}
               >
                 {/* Discount Badge */}
-                <View style={styles.smallDiscountBadge}>
-                  <Text style={styles.smallDiscountText}>{product.discount}%</Text>
-                  <Text style={styles.smallDiscountText}>OFF</Text>
-                </View>
+                <DiscountBadge discount={product.discount} size="small" />
 
                 {/* Product Image */}
                 <Image
                   source={{ uri: product.image }}
                   style={styles.smallProductImage}
-                  resizeMode="contain"
+                  contentFit="contain"
                 />
 
                 {/* Product Info */}
@@ -159,14 +250,17 @@ export default function HomeScreen() {
                   <Text style={styles.smallOriginalPrice}>₹{product.originalPrice}</Text>
                 </View>
 
-                {/* Action Button */}
-                <Pressable style={styles.smallAddButton}>
-                  <Text style={styles.smallAddButtonText}>2 options</Text>
-                </Pressable>
-              </CardWrapper>
+                {/* Options Button */}
+                <OptionButton
+                  text="2 options"
+                  onPress={() => console.log('Options pressed:', product.id)}
+                  fullWidth
+                  variant="primary"
+                />
+              </View>
             ))}
-          </View>
-        </View>
+          </ScrollView>
+        </CardWrapper>
 
         {/* Description Section */}
         <View style={styles.section}>
@@ -194,27 +288,35 @@ const styles = StyleSheet.create({
   },
   mainProductCard: {
     marginBottom: Spacing.xl,
+    // alignItems: 'center',
+  },
+  imageCarouselContainer: {
+    width: '100%',
     alignItems: 'center',
-  },
-  discountBadge: {
-    position: 'absolute',
-    top: Spacing.md,
-    left: Spacing.md,
-    backgroundColor: Colors.badge,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-    zIndex: 1,
-  },
-  discountText: {
-    color: Colors.background,
-    fontSize: 12,
-    fontWeight: '700',
+    marginVertical: Spacing.lg,
   },
   productImage: {
     width: 200,
-    height: 200,
-    marginVertical: Spacing.lg,
+    height: 230,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.md,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.border,
+  },
+  paginationDotActive: {
+    backgroundColor: '#FF9800',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   brandText: {
     ...Typography.bodySmall,
@@ -225,12 +327,11 @@ const styles = StyleSheet.create({
     ...Typography.h3,
     color: Colors.text,
     marginBottom: Spacing.xs,
-    textAlign: 'center',
   },
   weight: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
-    marginBottom: Spacing.md,
+    // marginBottom: Spacing.md,
   },
   priceContainer: {
     flexDirection: 'row',
@@ -247,18 +348,9 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     textDecorationLine: 'line-through',
   },
-  addButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.md,
-    width: '100%',
+  quantitySection: {
+    marginTop: Spacing.md,
     alignItems: 'center',
-  },
-  addButtonText: {
-    color: Colors.background,
-    ...Typography.body,
-    fontWeight: '600',
   },
   section: {
     marginBottom: Spacing.xl,
@@ -268,75 +360,61 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: Spacing.md,
   },
-  horizontalScroll: {
-    flexDirection: 'row',
+  horizontalScrollContent: {
     gap: Spacing.md,
   },
   productCard: {
-    width: 140,
-  },
-  smallDiscountBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    left: Spacing.sm,
-    backgroundColor: Colors.badge,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
-    borderRadius: BorderRadius.sm,
-    zIndex: 1,
-  },
-  smallDiscountText: {
-    color: Colors.background,
-    fontSize: 10,
-    fontWeight: '700',
+    width: 180,
+    backgroundColor: Colors.cardBackground,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    shadowColor: Colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   smallProductImage: {
     width: '100%',
-    height: 100,
-    marginBottom: Spacing.sm,
+    height: 120,
+    marginBottom: Spacing.md,
+    marginTop: Spacing.sm,
   },
   smallBrand: {
     ...Typography.caption,
     color: Colors.textSecondary,
-    marginBottom: Spacing.xs,
+    marginBottom: 2,
   },
   smallProductName: {
-    ...Typography.bodySmall,
+    ...Typography.body,
     color: Colors.text,
     fontWeight: '600',
-    marginBottom: Spacing.xs,
+    marginBottom: 4,
+    lineHeight: 20,
   },
   smallWeight: {
     ...Typography.caption,
     color: Colors.textSecondary,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   smallPriceContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
+    alignItems: 'baseline',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   smallPrice: {
-    ...Typography.bodySmall,
+    ...Typography.h3,
     color: Colors.text,
     fontWeight: '700',
   },
   smallOriginalPrice: {
-    ...Typography.caption,
+    ...Typography.body,
     color: Colors.textSecondary,
     textDecorationLine: 'line-through',
-  },
-  smallAddButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.sm,
-    alignItems: 'center',
-  },
-  smallAddButtonText: {
-    color: Colors.background,
-    ...Typography.bodySmall,
-    fontWeight: '600',
   },
   descriptionText: {
     ...Typography.body,
