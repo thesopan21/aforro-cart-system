@@ -5,7 +5,6 @@ import { DiscountBadge } from '@/components/DiscountBadge';
 import { Header } from '@/components/Header';
 import { IconButton } from '@/components/IconButton';
 import { OptionButton } from '@/components/OptionButton';
-import { QuantityStepper } from '@/components/QuantityStepper';
 import { ProductOptionsBottomSheet, ProductOption } from '@/components/ProductOptionsBottomSheet';
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View, ViewToken } from 'react-native';
@@ -71,7 +70,6 @@ export default function HomeScreen() {
 
   const handleSelectOption = (option: ProductOption, quantity: number) => {
     console.log('Selected option:', option, 'Quantity:', quantity);
-    bottomSheetRef.current?.close();
     // Add your logic here (e.g., add to cart)
   };
 

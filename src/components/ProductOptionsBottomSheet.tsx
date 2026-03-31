@@ -4,6 +4,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/botto
 import { BorderRadius, Colors, Spacing } from '../constants/theme';
 import { Typography } from '@/constants/typography';
 import { QuantityStepper } from './QuantityStepper';
+import { useRouter } from 'expo-router';
 
 export interface ProductOption {
   id: string;
@@ -18,13 +19,20 @@ export interface ProductOptionsBottomSheetProps {
   title?: string;
   options: ProductOption[];
   onSelectOption?: (option: ProductOption, quantity: number) => void;
+  /** Text for confirm button */
+  confirmButtonText?: string;
+  /** Enable navigation to cart screen (default: true) */
+  enableCartNavigation?: boolean;
 }
 
 export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsBottomSheetProps>(
-  ({ title = 'Select Options', options, onSelectOption }, ref) => {
+  ({ 
+    title = 'Select Options', options, onSelectOption, confirmButtonText = 'Go to Cart', enableCartNavigation = true }, ref) => {
+    const router = useRouter();
     const [quantities, setQuantities] = React.useState<{ [key: string]: number }>(
       options.reduce((acc, option) => ({ ...acc, [option.id]: 1 }), {})
     );
+    const [addedItems, setAddedItems] = React.useState<Set<string>>(new Set());
 
     const snapPoints = useMemo(() => ['50%', '75%'], []);
 
@@ -47,6 +55,20 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
     const handleSelectOption = (option: ProductOption) => {
       if (option.available && onSelectOption) {
         onSelectOption(option, quantities[option.id]);
+        setAddedItems((prev) => new Set(prev).add(option.id));
+      }
+    };
+
+    const handleConfirm = () => {
+      if (enableCartNavigation) {
+        // Close the bottom sheet first
+        if (ref && typeof ref !== 'function' && ref.current) {
+          ref.current.close();
+        }
+        // Navigate to cart screen after a short delay to allow sheet to close
+        setTimeout(() => {
+          router.push('/cart');
+        }, 300);
       }
     };
 
@@ -120,6 +142,20 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
               </View>
             ))}
           </View>
+
+          {/* Confirm Button */}
+          {enableCartNavigation && addedItems.size > 0 && (
+            <View style={styles.confirmButtonContainer}>
+              <Pressable
+                style={styles.confirmButton}
+                onPress={handleConfirm}
+              >
+                <Text style={styles.confirmButtonText}>
+                  {confirmButtonText} ({addedItems.size} item{addedItems.size > 1 ? 's' : ''})
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </BottomSheetView>
       </BottomSheet>
     );
@@ -216,5 +252,22 @@ const styles = StyleSheet.create({
   },
   addButtonTextDisabled: {
     color: Colors.border,
+  },
+  confirmButtonContainer: {
+    marginTop: Spacing.lg,
+    paddingBottom: Spacing.lg,
+  },
+  confirmButton: {
+    backgroundColor: Colors.primary,
+    paddingVertical: Spacing.md + 2,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmButtonText: {
+    ...Typography.body,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 16,
   },
 });
