@@ -4,10 +4,10 @@
     "slug": "aforro-cart-system",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icons/icon.png",
     "scheme": "aforrocartsystem",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/icons/icon.png",
       "bundleIdentifier": "com.thesopan21.aforrocartsystem"
     },
     "android": {
