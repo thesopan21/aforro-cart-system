@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedScrollView } from '@/components/AnimatedScrollView';
 import { CardWrapper } from '@/components/CardWrapper';
 import { Header } from '@/components/Header';
-import { BackIcon, ShareIcon } from '@/components';
+import { IconButton } from '@/components/IconButton';
 
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
@@ -63,10 +63,22 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safeArea}>
       <Header
         title="Dairy milk silk chocolate abcdefghitg..."
-        leftIcon={<BackIcon />}
-        rightIcon={<ShareIcon />}
-        onLeftPress={() => console.log('Back pressed')}
-        onRightPress={() => console.log('Share pressed')}
+        leftIcon={
+          <IconButton
+            name="back"
+            size={24}
+            color={Colors.text}
+            onPress={() => console.log('Back pressed')}
+          />
+        }
+        rightIcon={
+          <IconButton
+            name="share"
+            size={24}
+            color={Colors.text}
+            onPress={() => console.log('Share pressed')}
+          />
+        }
       />
       <AnimatedScrollView
         enableHeaderFade={false}
