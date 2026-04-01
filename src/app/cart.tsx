@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Shadows, Spacing } from '../constants/theme';
+import Entypo from '@expo/vector-icons/Entypo';
 
 const CartScreen = () => {
   const router = useRouter();
@@ -245,20 +246,14 @@ const CartScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {/* Header Section */}
       <Header
         title="Review Cart"
         leftIcon={
-          <IconButton
-            name="back"
-            size={24}
-            color={Colors.text}
-          />
+          <Entypo name="chevron-left" size={24} color="black" />
         }
         onLeftPress={handleBackPress}
-        style={styles.header}
-        backgroundColor={Colors.background}
       />
 
       {/* Cart Content */}
@@ -509,7 +504,6 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     borderBottomWidth: 1,
