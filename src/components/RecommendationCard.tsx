@@ -5,19 +5,9 @@ import { BorderRadius, Colors, Shadows, Spacing } from '../constants/theme';
 import { AddButton } from './AddButton';
 import { DiscountBadge } from './DiscountBadge';
 import { OptionButton } from './OptionButton';
+import { RecommendationProduct } from '@/types/product';
 
-export interface RecommendationProduct {
-  id: string;
-  name: string;
-  category: string;
-  image: string;
-  price: number;
-  originalPrice?: number;
-  weight?: string;
-  discount?: number;
-  hasOptions?: boolean;
-  optionsCount?: number;
-}
+
 
 export interface RecommendationCardProps {
   /** Product data */
@@ -56,6 +46,14 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
       : 0);
 
+  // Get the first image if array, or use the value directly
+  const imageSource = Array.isArray(product.image) ? product.image[0] : product.image;
+  
+  // Determine if it's a URI string or a local asset (number from require())
+  const imageProps = typeof imageSource === 'string' 
+    ? { uri: imageSource } 
+    : imageSource;
+
   return (
     <View style={[styles.container, style]}>
       {/* Discount Badge */}
@@ -68,11 +66,13 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
       )}
 
       {/* Product Image */}
-      <Image
-        source={{ uri: product.image }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      {imageSource && (
+        <Image
+          source={imageProps}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      )}
 
       {/* Product Info */}
       <View style={styles.infoContainer}>
@@ -133,16 +133,16 @@ const styles = StyleSheet.create({
     width: 140,
     backgroundColor: Colors.cardBackground,
     borderRadius: BorderRadius.lg,
-    ...Shadows.small,
     marginRight: Spacing.md,
     overflow: 'visible',
   },
   image: {
-    width: '100%',
+    width: 44,
     height: 120,
     borderTopLeftRadius: BorderRadius.lg,
     borderTopRightRadius: BorderRadius.lg,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
+    alignSelf: 'center',
   },
   infoContainer: {
     padding: Spacing.sm,

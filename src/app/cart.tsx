@@ -3,12 +3,9 @@ import { AlertBanner } from '@/components/AlertBanner';
 import { CartItemCard } from '@/components/CartItemCard';
 import { CashbackBanner } from '@/components/CashbackBanner';
 import { Coupon, CouponCard } from '@/components/CouponCard';
-import { DeliveryChip } from '@/components/DeliveryChip';
 import { DeliveryInfoBanner, DeliveryType } from '@/components/DeliveryInfoBanner';
 import { Header } from '@/components/Header';
-import { IconButton } from '@/components/IconButton';
-import { PriceRow } from '@/components/PriceRow';
-import { RecommendationCard, RecommendationProduct } from '@/components/RecommendationCard';
+import { RecommendationCard, } from '@/components/RecommendationCard';
 import { SavingsBanner } from '@/components/SavingsBanner';
 import { Typography } from '@/constants/typography';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,11 +15,12 @@ import { updateQuantity } from '@/store/slices/cartSlice';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Shadows, Spacing } from '../constants/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import { CardWrapper } from '@/components/CardWrapper';
+import { recommendationProducts } from '@/data/recommendedProduct';
 
 const CartScreen = () => {
   const router = useRouter();
@@ -36,45 +34,6 @@ const CartScreen = () => {
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [serviceabilityStatus, setServiceabilityStatus] = useState<ServiceabilityStatus | null>(null);
   const [deliveryType, setDeliveryType] = useState<DeliveryType>('instant'); // 'instant' or 'slot'
-
-  // Sample recommendation products data
-  const recommendationProducts: RecommendationProduct[] = [
-    {
-      id: 'rec1',
-      name: 'Gold Premium Assam Tea Rich...',
-      category: 'Tata Tea',
-      image: 'https://via.placeholder.com/140x120/2196F3/FFFFFF?text=SKYR+Yogurt',
-      price: 444,
-      originalPrice: 444,
-      weight: '1 kg',
-      discount: 52,
-      hasOptions: true,
-      optionsCount: 2,
-    },
-    {
-      id: 'rec2',
-      name: 'Gold Premium Assam Tea Rich...',
-      category: 'Tata Tea',
-      image: 'https://via.placeholder.com/140x120/2196F3/FFFFFF?text=SKYR+Yogurt',
-      price: 444,
-      originalPrice: 444,
-      weight: '1 kg',
-      discount: 52,
-      hasOptions: true,
-      optionsCount: 2,
-    },
-    {
-      id: 'rec3',
-      name: 'Organic apple vinegar',
-      category: 'Tata Tea',
-      image: 'https://via.placeholder.com/140x120/FF9800/FFFFFF?text=Vinegar',
-      price: 444,
-      originalPrice: 444,
-      weight: '1 kg',
-      discount: 52,
-      hasOptions: false,
-    },
-  ];
 
   // Sample coupons data
   const [coupons, setCoupons] = useState<Coupon[]>([
@@ -293,7 +252,7 @@ const CartScreen = () => {
 
 
         {/* Recommendations Section - "Did you forget?" */}
-        <View style={styles.recommendationSection}>
+        <CardWrapper style={styles.recommendationSection}>
           <Text style={styles.sectionTitle}>Did you forget?</Text>
           <ScrollView
             horizontal
@@ -309,7 +268,7 @@ const CartScreen = () => {
               />
             ))}
           </ScrollView>
-        </View>
+        </CardWrapper>
 
         {/* Coupons Section */}
         <View style={styles.couponSection}>
@@ -432,22 +391,20 @@ const styles = StyleSheet.create({
     paddingBottom: 120, // Extra padding for fixed proceed button
   },
   savingsBanner: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   alertBanner: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   mainProductCard: {
     marginBottom: Spacing.md,
   },
   recommendationSection: {
-    marginTop: Spacing.md,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   sectionTitle: {
     ...Typography.body,
     fontSize: 16,
-    fontWeight: '700',
     color: Colors.text,
     marginBottom: Spacing.md,
   },
