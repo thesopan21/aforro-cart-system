@@ -340,6 +340,14 @@ const CartScreen = () => {
             onChange={setDeliveryInstructions}
           />
         </CardWrapper>
+
+        <CardWrapper padding={Spacing.lg}>
+          <Text style={styles.sectionTitle}>Cancellation policy</Text>
+          <Text style={styles.policyText}>
+            You can cancel your order for free within the first 90 seconds. 
+            After that, a cancellation fee will apply.
+          </Text>
+        </CardWrapper>
       </ScrollView>
 
       {/* Delivery Info Banner - Fixed below header */}
@@ -432,7 +440,7 @@ const styles = StyleSheet.create({
   couponSection: {
     marginBottom: Spacing.lg,
   },
-  cashbackSection:{
+  cashbackSection: {
     marginBottom: Spacing.lg,
   },
   dashedLine: {
@@ -535,20 +543,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   policySection: {
-    marginBottom: Spacing.xl,
-  },
-  policyTitle: {
-    ...Typography.body,
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
   policyText: {
-    ...Typography.body,
-    fontSize: 13,
     color: Colors.textSecondary,
-    lineHeight: 20,
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansRegular,
   },
   loadingContainer: {
     flexDirection: 'row',
