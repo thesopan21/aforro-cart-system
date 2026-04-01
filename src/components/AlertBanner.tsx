@@ -1,7 +1,8 @@
-import { Typography } from '@/constants/typography';
+import { fontFamily } from '@/constants/typography';
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Spacing } from '../constants/theme';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export type AlertType = 'warning' | 'info' | 'error' | 'success';
 
@@ -24,37 +25,6 @@ export interface AlertBannerProps {
   iconColor?: string;
 }
 
-// Default theme for each alert type
-const ALERT_THEMES = {
-  warning: {
-    icon: '⚠',
-    backgroundColor: '#FFFBF0',
-    borderColor: '#F5C842',
-    textColor: '#856404',
-    iconColor: '#F5C842',
-  },
-  info: {
-    icon: 'ℹ',
-    backgroundColor: '#E3F2FD',
-    borderColor: '#2196F3',
-    textColor: '#0D47A1',
-    iconColor: '#2196F3',
-  },
-  error: {
-    icon: '✕',
-    backgroundColor: '#FFEBEE',
-    borderColor: '#F44336',
-    textColor: '#C62828',
-    iconColor: '#F44336',
-  },
-  success: {
-    icon: '✓',
-    backgroundColor: '#E8F5E9',
-    borderColor: '#4CAF50',
-    textColor: '#2E7D32',
-    iconColor: '#4CAF50',
-  },
-};
 
 /**
  * Reusable alert banner component for displaying warnings, info, errors, or success messages
@@ -62,16 +32,11 @@ const ALERT_THEMES = {
  */
 export const AlertBanner: React.FC<AlertBannerProps> = ({
   message,
-  type = 'warning',
-  icon,
   style,
-  backgroundColor,
-  borderColor,
-  textColor,
-  iconColor,
+  backgroundColor = '#FFCD341A',
+  borderColor = '#FFCD34',
+  textColor = '#717171',
 }) => {
-  const theme = ALERT_THEMES[type];
-  const displayIcon = icon || theme.icon;
   const messages = Array.isArray(message) ? message : [message];
 
   return (
@@ -79,22 +44,15 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
       style={[
         styles.container,
         {
-          backgroundColor: backgroundColor || theme.backgroundColor,
-          borderColor: borderColor || theme.borderColor,
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
         },
         style,
       ]}
     >
       {/* Icon */}
       <View style={styles.iconContainer}>
-        <View
-          style={[
-            styles.iconCircle,
-            { backgroundColor: iconColor || theme.iconColor },
-          ]}
-        >
-          <Text style={styles.iconText}>{displayIcon}</Text>
-        </View>
+        <FontAwesome6 name="circle-exclamation" size={24} color="#FFCD34" />
       </View>
 
       {/* Message(s) */}
@@ -104,7 +62,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
             key={index}
             style={[
               styles.messageText,
-              { color: textColor || theme.textColor },
+              { color: textColor  },
               index > 0 && styles.messageTextSpacing,
             ]}
           >
@@ -123,7 +81,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1.5,
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   iconContainer: {
     marginRight: Spacing.sm,
@@ -146,11 +104,10 @@ const styles = StyleSheet.create({
     paddingTop: 2,
   },
   messageText: {
-    ...Typography.body,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansRegular,
   },
   messageTextSpacing: {
-    marginTop: 2,
+    marginTop: 1,
   },
 });
