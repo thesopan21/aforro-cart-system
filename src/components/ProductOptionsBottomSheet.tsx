@@ -1,10 +1,12 @@
-import React, { forwardRef, useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { BorderRadius, Colors, Spacing } from '../constants/theme';
 import { Typography } from '@/constants/typography';
-import { QuantityStepper } from './QuantityStepper';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { addToCart, updateQuantity } from '@/store/slices/cartSlice';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
+import React, { forwardRef, useCallback, useMemo } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { BorderRadius, Colors, Spacing } from '../constants/theme';
+import { QuantityStepper } from './QuantityStepper';
 
 export interface ProductOption {
   id: string;
@@ -26,13 +28,15 @@ export interface ProductOptionsBottomSheetProps {
 }
 
 export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsBottomSheetProps>(
-  ({ 
+  ({
     title = 'Select Options', options, onSelectOption, confirmButtonText = 'Go to Cart', enableCartNavigation = true }, ref) => {
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const cartItems = useAppSelector((state) => state.cart.items);
+
     const [quantities, setQuantities] = React.useState<{ [key: string]: number }>(
       options.reduce((acc, option) => ({ ...acc, [option.id]: 1 }), {})
     );
-    const [addedItems, setAddedItems] = React.useState<Set<string>>(new Set());
 
     const snapPoints = useMemo(() => ['50%', '75%'], []);
 
@@ -52,11 +56,29 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
       setQuantities((prev) => ({ ...prev, [optionId]: newQuantity }));
     };
 
-    const handleSelectOption = (option: ProductOption) => {
-      if (option.available && onSelectOption) {
-        onSelectOption(option, quantities[option.id]);
-        setAddedItems((prev) => new Set(prev).add(option.id));
+    const handleAddToCart = (option: ProductOption) => {
+      if (option.available) {
+        dispatch(addToCart({
+          id: option.id,
+          name: option.name,
+          price: option.price,
+          originalPrice: option.originalPrice,
+          quantity: 1,
+          weight: option.weight,
+        }));
+        if (onSelectOption) {
+          onSelectOption(option, 1);
+        }
       }
+    };
+
+    const handleUpdateQuantity = (optionId: string, newQuantity: number) => {
+      dispatch(updateQuantity({ id: optionId, quantity: newQuantity }));
+    };
+
+    const getCartItemQuantity = (optionId: string): number => {
+      const cartItem = cartItems.find(item => item.id === optionId);
+      return cartItem ? cartItem.quantity : 0;
     };
 
     const handleConfirm = () => {
@@ -108,50 +130,53 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
                 </View>
 
                 <View style={styles.optionActions}>
-                  <QuantityStepper
-                    value={quantities[option.id]}
-                    onIncrease={() =>
-                      handleQuantityChange(option.id, quantities[option.id] + 1)
-                    }
-                    onDecrease={() =>
-                      handleQuantityChange(option.id, quantities[option.id] - 1)
-                    }
-                    min={1}
-                    max={10}
-                    size="small"
-                    disabled={!option.available}
-                  />
-                  <Pressable
-                    style={[
-                      styles.addButton,
-                      !option.available && styles.addButtonDisabled,
-                    ]}
-                    onPress={() => handleSelectOption(option)}
-                    disabled={!option.available}
-                  >
-                    <Text
+                  {getCartItemQuantity(option.id) > 0 ? (
+                    <QuantityStepper
+                      value={getCartItemQuantity(option.id)}
+                      onIncrease={() =>
+                        handleUpdateQuantity(option.id, getCartItemQuantity(option.id) + 1)
+                      }
+                      onDecrease={() =>
+                        handleUpdateQuantity(option.id, getCartItemQuantity(option.id) - 1)
+                      }
+                      min={0}
+                      max={10}
+                      size="small"
+                      disabled={!option.available}
+                    />
+                  ) : (
+                    <Pressable
                       style={[
-                        styles.addButtonText,
-                        !option.available && styles.addButtonTextDisabled,
+                        styles.addButton,
+                        !option.available && styles.addButtonDisabled,
                       ]}
+                      onPress={() => handleAddToCart(option)}
+                      disabled={!option.available}
                     >
-                      {option.available ? 'Add' : 'Out of Stock'}
-                    </Text>
-                  </Pressable>
+                      <Text
+                        style={[
+                          styles.addButtonText,
+                          !option.available && styles.addButtonTextDisabled,
+                        ]}
+                      >
+                        {option.available ? 'Add' : 'Out of Stock'}
+                      </Text>
+                    </Pressable>
+                  )}
                 </View>
               </View>
             ))}
           </View>
 
           {/* Confirm Button */}
-          {enableCartNavigation && addedItems.size > 0 && (
+          {enableCartNavigation && cartItems.length > 0 && (
             <View style={styles.confirmButtonContainer}>
               <Pressable
                 style={styles.confirmButton}
                 onPress={handleConfirm}
               >
                 <Text style={styles.confirmButtonText}>
-                  {confirmButtonText} ({addedItems.size} item{addedItems.size > 1 ? 's' : ''})
+                  {confirmButtonText} ({cartItems.length} item{cartItems.length > 1 ? 's' : ''})
                 </Text>
               </Pressable>
             </View>

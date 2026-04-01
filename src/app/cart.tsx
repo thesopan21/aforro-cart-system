@@ -1,6 +1,6 @@
 import { AddressBottomSheet, SavedAddress } from '@/components/AddressBottomSheet';
 import { AlertBanner } from '@/components/AlertBanner';
-import { CartItem, CartItemCard } from '@/components/CartItemCard';
+import { CartItemCard } from '@/components/CartItemCard';
 import { CashbackBanner } from '@/components/CashbackBanner';
 import { Coupon, CouponCard } from '@/components/CouponCard';
 import { DeliveryChip } from '@/components/DeliveryChip';
@@ -13,6 +13,8 @@ import { SavingsBanner } from '@/components/SavingsBanner';
 import { Typography } from '@/constants/typography';
 import { useAuth } from '@/hooks/useAuth';
 import { ServiceabilityStatus, useServiceability } from '@/hooks/useServiceability';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { updateQuantity } from '@/store/slices/cartSlice';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -22,6 +24,8 @@ import { Colors, Shadows, Spacing } from '../constants/theme';
 
 const CartScreen = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
   const addressBottomSheetRef = useRef<BottomSheet>(null);
   const { checkServiceability, loading: checkingServiceability } = useServiceability();
   const { isLoggedIn, login } = useAuth();
@@ -30,50 +34,6 @@ const CartScreen = () => {
   const [selectedAddress, setSelectedAddress] = useState<SavedAddress | null>(null);
   const [serviceabilityStatus, setServiceabilityStatus] = useState<ServiceabilityStatus | null>(null);
   const [deliveryType, setDeliveryType] = useState<DeliveryType>('instant'); // 'instant' or 'slot'
-
-  // Sample cart items data
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Gold Premium Assam Tea',
-      description: 'Rich Taste & Irresistible',
-      image: 'https://via.placeholder.com/80/6A1B9A/FFFFFF?text=Tea',
-      price: 199,
-      originalPrice: 299,
-      quantity: 1,
-      weight: '1 kg',
-    },
-    {
-      id: '2',
-      name: 'Gold Premium Assam Tea',
-      description: 'Rich Taste & Irresistible',
-      image: 'https://via.placeholder.com/80/6A1B9A/FFFFFF?text=Tea',
-      price: 199,
-      originalPrice: 299,
-      quantity: 1,
-      weight: '1 kg',
-    },
-    {
-      id: '3',
-      name: 'Gold Premium Assam Tea',
-      description: 'Rich Taste & Irresistible',
-      image: 'https://via.placeholder.com/80/6A1B9A/FFFFFF?text=Tea',
-      price: 199,
-      originalPrice: 299,
-      quantity: 1,
-      weight: '1 kg',
-    },
-    {
-      id: '4',
-      name: 'Gold Premium Assam Tea',
-      description: 'Rich Taste & Irresistible',
-      image: 'https://via.placeholder.com/80/6A1B9A/FFFFFF?text=Tea',
-      price: 199,
-      originalPrice: 299,
-      quantity: 1,
-      weight: '1 kg',
-    },
-  ]);
 
   // Sample recommendation products data
   const recommendationProducts: RecommendationProduct[] = [
@@ -195,21 +155,17 @@ const CartScreen = () => {
   };
 
   const handleQuantityIncrease = (itemId: string) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+    const item = cartItems.find(i => i.id === itemId);
+    if (item) {
+      dispatch(updateQuantity({ id: itemId, quantity: item.quantity + 1 }));
+    }
   };
 
   const handleQuantityDecrease = (itemId: string) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === itemId && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      ).filter(item => item.quantity > 0)
-    );
+    const item = cartItems.find(i => i.id === itemId);
+    if (item) {
+      dispatch(updateQuantity({ id: itemId, quantity: item.quantity - 1 }));
+    }
   };
 
   const handleOpenAddressBottomSheet = () => {

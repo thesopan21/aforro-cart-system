@@ -3,18 +3,7 @@ import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Colors, Spacing } from '../constants/theme';
 import { Typography } from '@/constants/typography';
 import { QuantityStepper } from './QuantityStepper';
-
-export interface CartItem {
-  id: string;
-  name: string;
-  description?: string;
-  image: string;
-  price: number;
-  originalPrice?: number;
-  quantity: number;
-  weight?: string;
-  unit?: string;
-}
+import { CartItem } from '@/store/slices/cartSlice';
 
 export interface CartItemCardProps {
   /** Cart item data */
@@ -55,7 +44,9 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({
   return (
     <View style={[styles.container, style]}>
       {/* Product Image */}
-      <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
+      {item.image && (
+        <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
+      )}
 
       {/* Product Info */}
       <View style={styles.infoContainer}>
