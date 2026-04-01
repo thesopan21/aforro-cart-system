@@ -1,10 +1,12 @@
 import { Typography } from '@/constants/typography';
+import { useCart } from '@/hooks/useCart';
 import React from 'react';
 import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Colors, Shadows, Spacing } from '../constants/theme';
 import { AddButton } from './AddButton';
 import { DiscountBadge } from './DiscountBadge';
 import { OptionButton } from './OptionButton';
+import { QuantityStepper } from './QuantityStepper';
 import { RecommendationProduct } from '@/types/product';
 
 
@@ -24,7 +26,7 @@ export interface RecommendationCardProps {
 
 /**
  * Product recommendation card for "Did you forget?" section
- * Reuses existing DiscountBadge, AddButton, and OptionButton components
+ * Now integrated with global cart system
  */
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   product,
@@ -33,8 +35,24 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   style,
   currencySymbol = '₹',
 }) => {
+  const { addToCart, incrementQuantity, decrementQuantity, isInCart, getItemQuantity } = useCart();
+
   const handleAddPress = () => {
-    onAddPress?.(product.id);
+    // If product has options, trigger options handler
+    if (product.hasOptions && onOptionsPress) {
+      onOptionsPress(product.id);
+    } else {
+      // Otherwise add directly to cart
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        weight: product.weight,
+      });
+      onAddPress?.(product.id);
+    }
   };
 
   const handleOptionsPress = () => {
@@ -53,6 +71,9 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   const imageProps = typeof imageSource === 'string' 
     ? { uri: imageSource } 
     : imageSource;
+
+  const inCart = isInCart(product.id);
+  const quantity = getItemQuantity(product.id);
 
   return (
     <View style={[styles.container, style]}>
@@ -105,8 +126,17 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           )}
         </View>
 
-        {/* Action Button */}
-        {product.hasOptions ? (
+        {/* Action Button/Stepper */}
+        {inCart && !product.hasOptions ? (
+          <QuantityStepper
+            value={quantity}
+            onIncrease={() => incrementQuantity(product.id)}
+            onDecrease={() => decrementQuantity(product.id)}
+            min={0}
+            size="small"
+            style={styles.actionButton}
+          />
+        ) : product.hasOptions ? (
           <OptionButton
             text={`${product.optionsCount || 2} options`}
             onPress={handleOptionsPress}
