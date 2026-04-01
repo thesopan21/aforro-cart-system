@@ -236,6 +236,58 @@ export default function HomeScreen() {
             </Text>
           </CardWrapper>
         </View>
+
+        {/* Customer also bought Section */}
+        <CardWrapper style={styles.section} padding={Spacing.lg}>
+          <Text style={styles.sectionTitle}>Customer also bought</Text>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollContent}
+          >
+            {similarProducts.map((product) => (
+              <View
+                key={product.id}
+                style={styles.productCard}
+              >
+                {/* Discount Badge */}
+                <DiscountBadge
+                  discount={product.discount}
+                  size="small"
+                />
+
+                {/* Product Image */}
+                <Image
+                  source={product.image}
+                  style={styles.smallProductImage}
+                  contentFit="contain"
+                />
+
+                {/* Product Info */}
+                <Text style={styles.smallBrand}>{product.brand}</Text>
+                <Text style={styles.smallProductName} numberOfLines={2}>
+                  {product.name}
+                </Text>
+                <Text style={styles.smallWeight}>{product.weight}</Text>
+
+                {/* Price */}
+                <View style={styles.smallPriceContainer}>
+                  <Text style={styles.smallPrice}>₹{product.price}</Text>
+                  <Text style={styles.smallOriginalPrice}>₹{product.originalPrice}</Text>
+                </View>
+
+                {/* Options Button */}
+                <OptionButton
+                  text="2 options"
+                  onPress={handleOpenBottomSheet}
+                  fullWidth
+                  variant="primary"
+                />
+              </View>
+            ))}
+          </ScrollView>
+        </CardWrapper>
       </AnimatedScrollView>
 
       {/* Bottom Sheet for Product Options */}
