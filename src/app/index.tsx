@@ -14,6 +14,7 @@ import { Typography } from '@/constants/typography';
 import BottomSheet from '@gorhom/bottom-sheet';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
+import { appAssets } from '@/assets/images';
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
  * This demonstrates a product detail screen similar to the attached design
@@ -75,11 +76,9 @@ export default function HomeScreen() {
 
   // Product images array
   const productImages = [
-    'https://via.placeholder.com/300/6A1B9A/FFFFFF?text=Image+1',
-    'https://via.placeholder.com/300/7B1FA2/FFFFFF?text=Image+2',
-    'https://via.placeholder.com/300/8E24AA/FFFFFF?text=Image+3',
-    'https://via.placeholder.com/300/9C27B0/FFFFFF?text=Image+4',
-    'https://via.placeholder.com/300/AB47BC/FFFFFF?text=Image+5',
+    appAssets.itemImage,
+    appAssets.itemImage,
+    appAssets.itemImage,
   ];
 
   // Handle viewable items change for pagination
@@ -153,11 +152,7 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Main Product Card */}
-        <CardWrapper
-          style={styles.mainProductCard}
-          shadowSize="large"
-          padding={Spacing.lg}
-        >
+        <CardWrapper  style={styles.mainProductCard}>
           {/* Discount Badge */}
           <DiscountBadge
             discount={mainProduct.discount}
@@ -175,7 +170,7 @@ export default function HomeScreen() {
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <Image
-                  source={{ uri: item }}
+                  source={item}
                   style={styles.productImage}
                   contentFit="contain"
                 />
@@ -326,8 +321,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   mainProductCard: {
-    marginBottom: Spacing.xl,
-    // alignItems: 'center',
+    marginBottom: Spacing.md,
   },
   imageCarouselContainer: {
     width: '100%',
