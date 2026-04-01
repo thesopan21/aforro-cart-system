@@ -3,7 +3,7 @@ export const Colors = {
   secondary: '#FF9800',
   background: '#FFFFFF',
   cardBackground: '#FFFFFF',
-  text: '#212121',
+  text: '#222222',
   textSecondary: '#757575',
   border: '#E0E0E0',
   badge: '#008577',

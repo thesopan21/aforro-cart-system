@@ -138,7 +138,7 @@ export default function HomeScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
         <Header
           title="Dairy milk silk chocolate abcdefghitg..."
           leftIcon={

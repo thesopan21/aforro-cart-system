@@ -9,7 +9,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Colors, Spacing } from '../constants/theme';
-import { Typography } from '@/constants/typography';
+import { fontFamily, Typography } from '@/constants/typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface HeaderProps {
   /** Header title text */
@@ -51,13 +52,17 @@ export const Header: React.FC<HeaderProps> = ({
   onLeftPress,
   onRightPress,
   style,
-  backgroundColor = Colors.background,
+  backgroundColor = '#FFFFFF',
   hideLeftIcon = false,
   hideRightIcon = false,
-  iconSize = 40,
+  iconSize = 36,
   numberOfLines = 1,
   testID,
 }) => {
+
+  const insets = useSafeAreaInsets();
+  const minHeight = 56 + insets.top; // Base height + top inset for safe area
+
   const iconContainerStyle = {
     width: iconSize,
     height: iconSize,
@@ -65,7 +70,14 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <View
-      style={[styles.container, { backgroundColor }, style]}
+      style={[
+        styles.container,
+        {
+          backgroundColor,
+          minHeight,
+        },
+        style
+      ]}
       testID={testID}
     >
       {/* Left Icon */}
@@ -123,17 +135,20 @@ export const Header: React.FC<HeaderProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingBottom: 16,
     minHeight: 56,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    boxShadow: '0px 0px 15.2px 0px #6262621F',    
   },
   iconContainer: {
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   iconButton: {
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     width: '100%',
     height: '100%',
@@ -145,8 +160,8 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.body,
-    fontWeight: '600',
     color: Colors.text,
     textAlign: 'center',
+    fontFamily: fontFamily.plusJakartaSansSemiBold
   },
 });
