@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Colors, Spacing } from '../constants/theme';
-import { Typography } from '@/constants/typography';
+import { fontFamily, Typography } from '@/constants/typography';
 import { QuantityStepper } from './QuantityStepper';
 import { CartItem } from '@/store/slices/cartSlice';
 
@@ -39,17 +39,19 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({
 
   // Get the first image if array, or use the value directly
   const imageSource = Array.isArray(item.image) ? item.image[0] : item.image;
-  
+
   // Determine if it's a URI string or a local asset (number from require())
-  const imageProps = typeof imageSource === 'string' 
-    ? { uri: imageSource } 
+  const imageProps = typeof imageSource === 'string'
+    ? { uri: imageSource }
     : imageSource;
 
   return (
     <View style={[styles.container, style]}>
       {/* Product Image */}
       {imageSource && (
-        <Image source={imageProps} style={styles.image} resizeMode="cover" />
+        <View style={styles.imageContainer}>
+          <Image source={imageProps} style={styles.image} resizeMode="cover" />
+        </View>
       )}
 
       {/* Product Info - Name and Weight */}
@@ -72,7 +74,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({
           onIncrease={handleIncrease}
           onDecrease={handleDecrease}
           min={0}
-          size="medium"
+          size="small"
         />
         {/* Price */}
         <View style={styles.priceContainer}>
@@ -93,33 +95,41 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  imageContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 5,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
-    width: 80,
-    height: 80,
-    borderRadius: BorderRadius.md,
-    backgroundColor: '#F5F5F5',
+    width: '100%',
+    height: '100%',
+    alignSelf: 'center',
   },
   infoContainer: {
     flex: 1,
     marginLeft: Spacing.md,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
   },
   title: {
     ...Typography.body,
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: 4,
+    fontSize: 11,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
+    color: '#5D5D5D',
   },
   weight: {
-    ...Typography.body,
-    fontSize: 12,
-    color: Colors.textSecondary,
+    fontSize: 11,
+    color: '#C0C0C0',
+    fontFamily: fontFamily.plusJakartaSansRegular,
   },
   rightColumn: {
     alignItems: 'flex-end',
@@ -129,19 +139,17 @@ const styles = StyleSheet.create({
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-    marginTop: Spacing.xs,
+    gap: Spacing.sm,
   },
   price: {
-    ...Typography.body,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text,
+    fontSize: 14,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
+    color: '#292C3F',
   },
   originalPrice: {
-    ...Typography.body,
-    fontSize: 13,
-    color: Colors.textSecondary,
+    fontSize: 12,
+    color: '#D4D4D4',
+    fontFamily: fontFamily.plusJakartaSansRegular,
     textDecorationLine: 'line-through',
   },
 });
