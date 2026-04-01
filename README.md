@@ -514,11 +514,10 @@ npx expo start
 
 ## Author
 
-**[Your Name]**
-- Email: your.email@example.com
-- LinkedIn: [Your LinkedIn Profile]
-- Portfolio: [Your Portfolio Website]
-- GitHub: [@yourusername](https://github.com/yourusername)
+**[Sopan Bhere]**
+- Email: sam21sop@gmail.com
+- LinkedIn: [https://www.linkedin.com/in/thesopan21]()
+- GitHub: [@thesopan21](https://github.com/thesopan21)
 
 ---
 
