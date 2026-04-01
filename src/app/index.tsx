@@ -84,9 +84,6 @@ export default function HomeScreen() {
 
     dispatch(setSelectedProduct(updatedProduct));
     setQuantity(quantity);
-
-    // Close the bottom sheet
-    bottomSheetRef.current?.close();
   };
 
   const handleProductClick = (product: Product) => {
@@ -130,7 +127,7 @@ export default function HomeScreen() {
               scrollAnimationDuration={300}
               onSnapToItem={(index) => setCurrentImageIndex(index)}
               onProgressChange={progressValue}
-              renderItem={({ item }: { item: string }) => (
+              renderItem={({ item }: { item: string | number }) => (
                 <View style={styles.carouselItem}>
                   <Image
                     source={item}
@@ -196,7 +193,7 @@ export default function HomeScreen() {
 
                 {/* Product Image */}
                 <Image
-                  source={product.image}
+                  source={product.image[0]}
                   style={styles.smallProductImage}
                   contentFit="contain"
                 />
@@ -263,7 +260,7 @@ export default function HomeScreen() {
 
                 {/* Product Image */}
                 <Image
-                  source={product.image}
+                  source={product.image[0]}
                   style={styles.smallProductImage}
                   contentFit="contain"
                 />
@@ -300,6 +297,7 @@ export default function HomeScreen() {
         title="Select Size"
         options={productOptions}
         onSelectOption={handleSelectOption}
+        productImage={selectedProduct?.image}
       />
     </SafeAreaView>
   );

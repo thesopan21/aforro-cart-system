@@ -25,11 +25,13 @@ export interface ProductOptionsBottomSheetProps {
   confirmButtonText?: string;
   /** Enable navigation to cart screen (default: true) */
   enableCartNavigation?: boolean;
+  /** Product image(s) to use for cart items - can be URI string, local asset (number), or array */
+  productImage?: string | number | (string | number)[];
 }
 
 export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsBottomSheetProps>(
   ({
-    title = 'Select Options', options, onSelectOption, confirmButtonText = 'Go to Cart', enableCartNavigation = true }, ref) => {
+    title = 'Select Options', options, onSelectOption, confirmButtonText = 'Go to Cart', enableCartNavigation = true, productImage }, ref) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
@@ -65,6 +67,7 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
           originalPrice: option.originalPrice,
           quantity: 1,
           weight: option.weight,
+          image: productImage,
         }));
         if (onSelectOption) {
           onSelectOption(option, 1);

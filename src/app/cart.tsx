@@ -22,6 +22,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Shadows, Spacing } from '../constants/theme';
 import Entypo from '@expo/vector-icons/Entypo';
+import { CardWrapper } from '@/components/CardWrapper';
 
 const CartScreen = () => {
   const router = useRouter();
@@ -279,14 +280,17 @@ const CartScreen = () => {
         />
 
         {/* Cart Items List */}
-        {cartItems.map((item) => (
-          <CartItemCard
-            key={item.id}
-            item={item}
-            onIncrease={handleQuantityIncrease}
-            onDecrease={handleQuantityDecrease}
-          />
-        ))}
+        <CardWrapper style={styles.mainProductCard}>
+          {cartItems.map((item) => (
+            <CartItemCard
+              key={item.id}
+              item={item}
+              onIncrease={handleQuantityIncrease}
+              onDecrease={handleQuantityDecrease}
+            />
+          ))}
+        </CardWrapper>
+
 
         {/* Recommendations Section - "Did you forget?" */}
         <View style={styles.recommendationSection}>
@@ -375,95 +379,6 @@ const CartScreen = () => {
         onLogin={handleLogin}
       />
 
-      {/* Scrollable Content Below Delivery Banner */}
-      <ScrollView
-        style={styles.deliveryInstructionsScroll}
-        contentContainerStyle={styles.deliveryInstructionsContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Delivery Instructions Section */}
-        <View style={styles.deliverySection}>
-          <Text style={styles.sectionTitle}>Delivery instructions</Text>
-
-          {/* Instruction Chips */}
-          <View style={styles.chipsContainer}>
-            <DeliveryChip
-              icon="🔔"
-              label="Don't ring the bell"
-              selected={deliveryInstructions.dontRing}
-              onPress={() => toggleDeliveryInstruction('dontRing')}
-            />
-            <DeliveryChip
-              icon="📞"
-              label="Don't call"
-              selected={deliveryInstructions.dontCall}
-              onPress={() => toggleDeliveryInstruction('dontCall')}
-            />
-            <DeliveryChip
-              icon="💂"
-              label="Leave order with guard"
-              selected={deliveryInstructions.leaveWithGuard}
-              onPress={() => toggleDeliveryInstruction('leaveWithGuard')}
-            />
-          </View>
-
-          {/* Custom Instructions Input */}
-          <TextInput
-            style={styles.customInput}
-            placeholder="Type in any other instructions..."
-            placeholderTextColor={Colors.textSecondary}
-            value={deliveryInstructions.customNote}
-            onChangeText={(text) =>
-              setDeliveryInstructions(prev => ({ ...prev, customNote: text }))
-            }
-            multiline
-          />
-        </View>
-
-        {/* Price Breakdown Section */}
-        <View style={styles.priceSection}>
-          <PriceRow
-            label="Item total"
-            value={444}
-            badgeText="saved ₹99"
-          />
-          <PriceRow
-            label="Delivery fee"
-            value={0}
-            originalValue={444}
-            isFree
-            helperText="Add items worth ₹20 to get free delivery"
-          />
-          <PriceRow
-            label="Discount"
-            value={444}
-            isDiscount
-          />
-          <PriceRow
-            label="Platform fee"
-            value={444}
-            isDiscount
-          />
-        </View>
-
-        {/* Total Payable Amount */}
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Total payable amount</Text>
-          <Text style={styles.totalValue}>₹444</Text>
-        </View>
-
-        {/* Bottom Savings Banner */}
-        <SavingsBanner amount={99} style={styles.bottomSavingsBanner} />
-
-        {/* Cancellation Policy */}
-        <View style={styles.policySection}>
-          <Text style={styles.policyTitle}>Cancellation policy</Text>
-          <Text style={styles.policyText}>
-            You can cancel your order for free within the first 90 seconds. After that, a cancellation fee will apply.
-          </Text>
-        </View>
-      </ScrollView>
-
       {/* Proceed Button - Fixed at bottom */}
       <View style={styles.proceedContainer}>
         <View style={styles.proceedTopSection}>
@@ -521,6 +436,9 @@ const styles = StyleSheet.create({
   },
   alertBanner: {
     marginBottom: Spacing.lg,
+  },
+  mainProductCard: {
+    marginBottom: Spacing.md,
   },
   recommendationSection: {
     marginTop: Spacing.md,
