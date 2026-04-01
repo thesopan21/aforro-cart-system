@@ -187,7 +187,10 @@ export default function HomeScreen() {
                 style={styles.productCard}
               >
                 {/* Discount Badge */}
-                <DiscountBadge discount={product.discount} size="small" />
+                <DiscountBadge
+                  discount={product.discount}
+                  size="small"
+                />
 
                 {/* Product Image */}
                 <Image
@@ -342,26 +345,15 @@ const styles = StyleSheet.create({
   },
   horizontalScrollContent: {
     gap: Spacing.md,
+    paddingRight: Spacing.md,
   },
   productCard: {
-    width: 180,
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    shadowColor: Colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    width: 120,
   },
   smallProductImage: {
-    width: '100%',
+    width: 44,
     height: 120,
-    marginBottom: Spacing.md,
-    marginTop: Spacing.sm,
+    alignSelf: 'center',
   },
   smallBrand: {
     ...Typography.caption,
@@ -371,7 +363,6 @@ const styles = StyleSheet.create({
   smallProductName: {
     ...Typography.body,
     color: Colors.text,
-    fontWeight: '600',
     marginBottom: 4,
     lineHeight: 20,
   },

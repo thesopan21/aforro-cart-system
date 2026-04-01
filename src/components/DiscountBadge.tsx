@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallBadge: {
-    width: 45,
-    height: 55,
+    width: 30,
+    height: 34,
   },
   mediumBadge: {
     width: 55,
@@ -96,18 +96,19 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#FFFFFF',
-    fontSize: 13
+    fontSize: 13,
+    lineHeight: 16,
   },
   smallText: {
-    fontSize: 9,
-    lineHeight: 11,
+    fontSize: 8,
+    lineHeight: 12,
   },
   mediumText: {
     fontSize: 11,
-    lineHeight: 13,
+    lineHeight: 16,
   },
   largeText: {
     fontSize: 13,
-    lineHeight: 15,
+    lineHeight: 20,
   },
 });
