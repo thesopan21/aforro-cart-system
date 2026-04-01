@@ -3,7 +3,6 @@ import { AnimatedScrollView } from '@/components/AnimatedScrollView';
 import { CardWrapper } from '@/components/CardWrapper';
 import { DiscountBadge } from '@/components/DiscountBadge';
 import { Header } from '@/components/Header';
-import { IconButton } from '@/components/IconButton';
 import { OptionButton } from '@/components/OptionButton';
 import { ProductOptionsBottomSheet, ProductOption } from '@/components/ProductOptionsBottomSheet';
 import React, { useCallback, useRef, useState } from 'react';
@@ -13,7 +12,8 @@ import { BorderRadius, Colors, Spacing, } from '../constants/theme';
 import { Image } from 'expo-image';
 import { Typography } from '@/constants/typography';
 import BottomSheet from '@gorhom/bottom-sheet';
-
+import Entypo from '@expo/vector-icons/Entypo';
+import Feather from '@expo/vector-icons/Feather';
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
  * This demonstrates a product detail screen similar to the attached design
@@ -142,20 +142,10 @@ export default function HomeScreen() {
         <Header
           title="Dairy milk silk chocolate abcdefghitg..."
           leftIcon={
-            <IconButton
-              name="back"
-              size={24}
-              color={Colors.text}
-              onPress={() => console.log('Back pressed')}
-            />
+            <Entypo name="chevron-left" size={24} color="black" />
           }
           rightIcon={
-            <IconButton
-              name="share"
-              size={24}
-              color={Colors.text}
-              onPress={() => console.log('Share pressed')}
-            />
+            <Feather name="share-2" size={24} color="#858585" />
           }
         />
         <AnimatedScrollView

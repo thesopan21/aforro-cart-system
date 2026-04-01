@@ -5,14 +5,15 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "npx expo run:android",
-    "ios": "npx expo run:ios",
+    "android": "npx expo run:android --device",
+    "ios": "npx expo run:ios --device",
     "web": "npx expo start --web",
     "lint": "expo lint",
     "prebuild": "npx expo prebuild",
     "prebuild:clean": "npx expo prebuild --clean"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/elements": "^2.9.10",
