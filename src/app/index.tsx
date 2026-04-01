@@ -358,18 +358,21 @@ const styles = StyleSheet.create({
   smallBrand: {
     ...Typography.caption,
     color: Colors.textSecondary,
+    fontSize: 10,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
     marginBottom: 2,
   },
   smallProductName: {
     ...Typography.body,
     color: Colors.text,
-    marginBottom: 4,
-    lineHeight: 20,
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
   },
   smallWeight: {
     ...Typography.caption,
     color: Colors.textSecondary,
-    marginBottom: Spacing.md,
+    fontSize: 10,
+    fontFamily: fontFamily.plusJakartaSansRegular,
   },
   smallPriceContainer: {
     flexDirection: 'row',
@@ -380,12 +383,15 @@ const styles = StyleSheet.create({
   smallPrice: {
     ...Typography.h3,
     color: Colors.text,
-    fontWeight: '700',
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
   },
   smallOriginalPrice: {
     ...Typography.body,
     color: Colors.textSecondary,
     textDecorationLine: 'line-through',
+    fontSize: 10,
+    fontFamily: fontFamily.plusJakartaSansRegular,
   },
   descriptionText: {
     ...Typography.body,
