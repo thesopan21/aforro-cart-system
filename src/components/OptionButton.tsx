@@ -2,6 +2,9 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { BorderRadius, Colors, Spacing } from '../constants/theme';
 import { Typography } from '@/constants/typography';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
+import Feather from '@expo/vector-icons/Feather';
+
 
 export interface OptionButtonProps {
   /** Button text (e.g., "2 options") */
@@ -61,7 +64,7 @@ export const OptionButton: React.FC<OptionButtonProps> = ({
       disabled={disabled}
     >
       <Text style={textStyles}>{text}</Text>
-      {showChevron && <Text style={textStyles}> ▾</Text>}
+      {showChevron && <Feather name="chevron-down" size={20} color="#FFFFFF" />}
     </Pressable>
   );
 };
@@ -74,7 +77,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderRadius: BorderRadius.md,
-    gap: Spacing.xs,
+    gap: 2,
+    boxShadow: '0px 0px 16px 0px #0000001F'
   },
   primaryButton: {
     backgroundColor: Colors.primary,
