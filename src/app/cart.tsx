@@ -3,6 +3,7 @@ import { AlertBanner } from '@/components/AlertBanner';
 import { CardWrapper } from '@/components/CardWrapper';
 import { CartItemCard } from '@/components/CartItemCard';
 import { CashbackBanner } from '@/components/CashbackBanner';
+import { CartSummary } from '@/components/CartSummary';
 import { Coupon, CouponCard } from '@/components/CouponCard';
 import { DeliveryInfoBanner, DeliveryType } from '@/components/DeliveryInfoBanner';
 import { DeliveryInstructions, DeliveryInstructionsState } from '@/components/DeliveryInstructions';
@@ -109,6 +110,22 @@ const CartScreen = () => {
   };
 
   const appliedCoupon = coupons.find(c => c.isApplied);
+
+  // Calculate cart totals
+  const itemTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const itemSavings = cartItems.reduce((sum, item) => {
+    if (item.originalPrice && item.originalPrice > item.price) {
+      return sum + ((item.originalPrice - item.price) * item.quantity);
+    }
+    return sum;
+  }, 0);
+  const couponDiscount = appliedCoupon?.discount || 0;
+  const platformFee = -444; // Platform fee waiver or discount
+  const deliveryFee = selectedAddress && serviceabilityStatus?.isServiceable ? 0 : null;
+  const totalPayable = deliveryFee !== null 
+    ? itemTotal - couponDiscount + platformFee + deliveryFee
+    : null;
+  const totalSavings = itemSavings + couponDiscount + (platformFee < 0 ? Math.abs(platformFee) : 0);
 
   const handleQuantityIncrease = (itemId: string) => {
     const item = cartItems.find(i => i.id === itemId);
@@ -341,6 +358,20 @@ const CartScreen = () => {
           />
         </CardWrapper>
 
+        {/* Cart Summary Section */}
+        <CardWrapper style={styles.summarySection}>
+          <CartSummary
+            itemTotal={itemTotal}
+            itemSavings={itemSavings}
+            deliveryFee={deliveryFee}
+            discount={couponDiscount}
+            platformFee={platformFee}
+            total={totalPayable}
+            totalSavings={totalSavings}
+            hasAddress={!!selectedAddress}
+          />
+        </CardWrapper>
+
         <CardWrapper padding={Spacing.lg}>
           <Text style={styles.sectionTitle}>Cancellation policy</Text>
           <Text style={styles.policyText}>
@@ -369,7 +400,9 @@ const CartScreen = () => {
         <View style={styles.proceedTopSection}>
           <View>
             <Text style={styles.toPayLabel}>To Pay</Text>
-            <Text style={styles.toPayAmount}>₹444</Text>
+            <Text style={styles.toPayAmount}>
+              {totalPayable !== null ? `₹${totalPayable}` : '--'}
+            </Text>
           </View>
           <Pressable
             style={({ pressed }) => [
@@ -516,6 +549,10 @@ const styles = StyleSheet.create({
   },
   deliverySection: {
     marginBottom: Spacing.lg,
+  },
+  summarySection: {
+    marginBottom: Spacing.lg,
+    padding: 0
   },
   priceSection: {
     marginBottom: Spacing.lg,
