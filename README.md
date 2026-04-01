@@ -288,25 +288,6 @@ cd android && ./gradlew assembleRelease
 cd ios && xcodebuild -workspace CartSystem.xcworkspace -scheme CartSystem archive
 ```
 
-## Environment Variables
-
-Currently, the app does not require environment variables for development. For production deployment, create a `.env` file:
-
-```env
-# API Configuration
-EXPO_PUBLIC_API_URL=https://api.aforro.com
-EXPO_PUBLIC_API_KEY=your_api_key_here
-
-# Analytics (Optional)
-EXPO_PUBLIC_ANALYTICS_ID=your_analytics_id
-
-# Feature Flags (Optional)
-EXPO_PUBLIC_ENABLE_LOCATION=true
-EXPO_PUBLIC_ENABLE_CASHBACK=true
-```
-
-**Note:** Prefix all variables with `EXPO_PUBLIC_` to make them accessible in the app.
-
 ## Key Technical Decisions
 
 ### 1. Expo vs React Native CLI
