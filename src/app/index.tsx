@@ -335,7 +335,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+    // backgroundColor:'red'
+    // marginBottom: Spacing.lg,
   },
   price: {
     ...Typography.h3,
