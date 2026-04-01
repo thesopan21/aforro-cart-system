@@ -6,6 +6,6 @@ export interface Product {
   price: number;
   originalPrice: number;
   discount: number;
-  weight: string;
+  weight?: string;
   image: string[]; // Can be a single image URL or an array of image URLs
 }

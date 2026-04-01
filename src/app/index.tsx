@@ -1,5 +1,4 @@
 
-import { appAssets } from '@/assets/images';
 import { AnimatedScrollView } from '@/components/AnimatedScrollView';
 import { CardWrapper } from '@/components/CardWrapper';
 import { DiscountBadge } from '@/components/DiscountBadge';
@@ -7,19 +6,20 @@ import { Header } from '@/components/Header';
 import { OptionButton } from '@/components/OptionButton';
 import { ProductOption, ProductOptionsBottomSheet } from '@/components/ProductOptionsBottomSheet';
 import { fontFamily, Typography } from '@/constants/typography';
+import { similarProducts } from '@/data/similarProducts';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setSelectedProduct } from '@/store/slices/productSlice';
+import { Product } from '@/types/product';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
 import React, { useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BorderRadius, Colors, Spacing, } from '../constants/theme';
-import { Product } from '@/types/product';
-import { similarProducts } from '@/data/similarProducts';
-import { mainProduct } from '@/data/product';
+import { Colors, Spacing } from '../constants/theme';
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
  * This demonstrates a product detail screen similar to the attached design
@@ -28,6 +28,9 @@ import { mainProduct } from '@/data/product';
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function HomeScreen() {
+  const dispatch = useAppDispatch();
+  const selectedProduct = useAppSelector((state) => state.product.selectedProduct);
+
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -67,7 +70,29 @@ export default function HomeScreen() {
 
   const handleSelectOption = (option: ProductOption, quantity: number) => {
     console.log('Selected option:', option, 'Quantity:', quantity);
-    // Add your logic here (e.g., add to cart)
+
+    // Update the selected product with the chosen variant
+    const updatedProduct: Product = {
+      ...selectedProduct,
+      id: option.id,
+      name: option.name,
+      price: option.price,
+      originalPrice: option.originalPrice ? option.originalPrice : option.price,
+      weight: option.weight,
+      discount: option.originalPrice ? Math.round(((option.originalPrice - option.price) / option.originalPrice) * 100) : 0,
+    };
+
+    dispatch(setSelectedProduct(updatedProduct));
+    setQuantity(quantity);
+
+    // Close the bottom sheet
+    bottomSheetRef.current?.close();
+  };
+
+  const handleProductClick = (product: Product) => {
+    dispatch(setSelectedProduct(product));
+    // Scroll to top when product changes
+    setCurrentImageIndex(0);
   };
 
 
@@ -75,7 +100,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
       <Header
-        title="Dairy milk silk chocolate abcdefghitg..."
+        title={selectedProduct.name}
         leftIcon={
           <Entypo name="chevron-left" size={24} color="black" />
         }
@@ -91,7 +116,7 @@ export default function HomeScreen() {
         <CardWrapper style={styles.mainProductCard}>
           {/* Discount Badge */}
           <DiscountBadge
-            discount={mainProduct.discount}
+            discount={selectedProduct.discount}
             size="large"
           />
 
@@ -101,11 +126,11 @@ export default function HomeScreen() {
               loop
               width={screenWidth - 32}
               height={280}
-              data={mainProduct.image}
+              data={selectedProduct.image}
               scrollAnimationDuration={300}
               onSnapToItem={(index) => setCurrentImageIndex(index)}
               onProgressChange={progressValue}
-              renderItem={({ item } : { item: string }) => (
+              renderItem={({ item }: { item: string }) => (
                 <View style={styles.carouselItem}>
                   <Image
                     source={item}
@@ -119,33 +144,23 @@ export default function HomeScreen() {
             {/* Pagination Dots */}
             <Pagination.Basic
               progress={progressValue}
-              data={mainProduct.image}
-              dotStyle={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: Colors.border,
-              }}
-              activeDotStyle={{
-                backgroundColor: '#FF9800',
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-              }}
+              data={selectedProduct.image}
+              dotStyle={styles.paginationDot}
+              activeDotStyle={styles.paginationActiveDot}
               containerStyle={styles.paginationContainer}
             />
           </View>
 
           {/* Product Details */}
-          <Text style={styles.brandText}>{mainProduct.brand}</Text>
-          <Text style={styles.productName} numberOfLines={2}>{mainProduct.name}</Text>
+          <Text style={styles.brandText}>{selectedProduct.brand}</Text>
+          <Text style={styles.productName} numberOfLines={2}>{selectedProduct.name}</Text>
           <View style={styles.productDetailsRow}>
             <View style={styles.weightPriceContainer}>
-              <Text style={styles.weight}>{mainProduct.weight}</Text>
+              <Text style={styles.weight}>{selectedProduct.weight}</Text>
               {/* Price Section */}
               <View style={styles.priceContainer}>
-                <Text style={styles.price}>₹{mainProduct.price}</Text>
-                <Text style={styles.originalPrice}>₹{mainProduct.originalPrice}</Text>
+                <Text style={styles.price}>₹{selectedProduct.price}</Text>
+                <Text style={styles.originalPrice}>₹{selectedProduct.originalPrice}</Text>
               </View>
             </View>
 
@@ -167,9 +182,11 @@ export default function HomeScreen() {
             contentContainerStyle={styles.horizontalScrollContent}
           >
             {similarProducts.map((product) => (
-              <View
+              <TouchableOpacity
                 key={product.id}
                 style={styles.productCard}
+                onPress={() => handleProductClick(product)}
+                activeOpacity={0.7}
               >
                 {/* Discount Badge */}
                 <DiscountBadge
@@ -204,7 +221,7 @@ export default function HomeScreen() {
                   fullWidth
                   variant="primary"
                 />
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </CardWrapper>
@@ -232,9 +249,11 @@ export default function HomeScreen() {
             contentContainerStyle={styles.horizontalScrollContent}
           >
             {similarProducts.map((product) => (
-              <View
+              <TouchableOpacity
                 key={product.id}
                 style={styles.productCard}
+                onPress={() => handleProductClick(product)}
+                activeOpacity={0.7}
               >
                 {/* Discount Badge */}
                 <DiscountBadge
@@ -269,7 +288,7 @@ export default function HomeScreen() {
                   fullWidth
                   variant="primary"
                 />
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </CardWrapper>
@@ -319,6 +338,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.xs,
     marginTop: Spacing.md,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.border,
+  },
+  paginationActiveDot: {
+    backgroundColor: '#FF9800',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   brandText: {
     ...Typography.bodySmall,
