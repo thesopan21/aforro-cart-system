@@ -139,19 +139,19 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
-        <Header
-          title="Dairy milk silk chocolate abcdefghitg..."
-          leftIcon={
-            <Entypo name="chevron-left" size={24} color="black" />
-          }
-          rightIcon={
-            <Feather name="share-2" size={24} color="#858585" />
-          }
-        />
-        <AnimatedScrollView
-          enableHeaderFade={false}
-          contentContainerStyle={styles.scrollContent}
-        >
+      <Header
+        title="Dairy milk silk chocolate abcdefghitg..."
+        leftIcon={
+          <Entypo name="chevron-left" size={24} color="black" />
+        }
+        rightIcon={
+          <Feather name="share-2" size={24} color="#858585" />
+        }
+      />
+      <AnimatedScrollView
+        enableHeaderFade={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Main Product Card */}
         <CardWrapper
           style={styles.mainProductCard}
@@ -207,12 +207,12 @@ export default function HomeScreen() {
           {/* Product Details */}
           <Text style={styles.brandText}>{mainProduct.brand}</Text>
           <Text style={styles.productName}>{mainProduct.name}</Text>
-          <View style={{ 
-            flexDirection: 'row', 
-            gap: Spacing.sm, 
-            alignItems: 'center' ,
+          <View style={{
+            flexDirection: 'row',
+            gap: Spacing.sm,
+            alignItems: 'center',
             justifyContent: 'space-between',
-            }}>
+          }}>
             <View style={{
               justifyContent: 'center',
             }}>
@@ -320,9 +320,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: '#FBFBFB'
   },
   scrollContent: {
-    padding: Spacing.lg,
+    padding: 16,
   },
   mainProductCard: {
     marginBottom: Spacing.xl,

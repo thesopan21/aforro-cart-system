@@ -43,9 +43,9 @@ export const CardWrapper: React.FC<CardWrapperProps> = ({
   enablePressAnimation = true,
   onPress,
   shadowSize = 'medium',
-  borderRadius = BorderRadius.lg,
-  padding = Spacing.md,
-  backgroundColor = Colors.cardBackground,
+  borderRadius = 16,
+  padding = 16,
+  backgroundColor = '#FFFFFF',
   disabled = false,
   testID,
 }) => {
@@ -83,7 +83,7 @@ export const CardWrapper: React.FC<CardWrapperProps> = ({
     backgroundColor,
     borderRadius,
     padding,
-    ...Shadows[shadowSize],
+    boxShadow: '0px 0px 15.2px 0px #6262621F',
   };
 
   if (onPress && !disabled) {
