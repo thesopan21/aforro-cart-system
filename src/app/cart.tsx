@@ -7,7 +7,7 @@ import { DeliveryInfoBanner, DeliveryType } from '@/components/DeliveryInfoBanne
 import { Header } from '@/components/Header';
 import { RecommendationCard, } from '@/components/RecommendationCard';
 import { SavingsBanner } from '@/components/SavingsBanner';
-import { Typography } from '@/constants/typography';
+import { fontFamily, Typography } from '@/constants/typography';
 import { useAuth } from '@/hooks/useAuth';
 import { ServiceabilityStatus, useServiceability } from '@/hooks/useServiceability';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -21,6 +21,7 @@ import { Colors, Shadows, Spacing } from '../constants/theme';
 import Entypo from '@expo/vector-icons/Entypo';
 import { CardWrapper } from '@/components/CardWrapper';
 import { recommendationProducts } from '@/data/recommendedProduct';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 const CartScreen = () => {
   const router = useRouter();
@@ -271,12 +272,18 @@ const CartScreen = () => {
         </CardWrapper>
 
         {/* Coupons Section */}
-        <View style={styles.couponSection}>
+        <CardWrapper style={styles.couponSection}>
+          {/* 2. Heading section */}
           <View style={styles.couponHeader}>
-            <Text style={styles.couponHeaderIcon}>🎯</Text>
+            <MaterialCommunityIcons name="sale" size={16} color="#0C748C" />
             <Text style={styles.couponHeaderText}>Top coupons for you</Text>
-            <Text style={styles.couponHeaderIcon}>🎯</Text>
+            <MaterialCommunityIcons name="sale" size={16} color="#0C748C" />
           </View>
+
+          {/* Dashed line */}
+          <View style={styles.dashedLine} />
+
+          {/* 3. Coupon cards section */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -291,30 +298,37 @@ const CartScreen = () => {
               />
             ))}
           </ScrollView>
-        </View>
 
-        {/* Applied Coupon Savings Banner */}
-        {appliedCoupon && (
-          <View style={styles.appliedCouponBanner}>
-            <Text style={styles.appliedCouponText}>🎉</Text>
-            <Text style={styles.appliedCouponText}>
-              You are saving ₹{appliedCoupon.discount} with this coupon
-            </Text>
-            <Text style={styles.appliedCouponText}>🎉</Text>
-          </View>
-        )}
+          {/* Dashed line */}
+          <View style={styles.dashedLine} />
 
-        {/* View More Coupons Link */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.viewMoreLink,
-            pressed && styles.viewMoreLinkPressed,
-          ]}
-          onPress={handleViewMoreCoupons}
-        >
-          <Text style={styles.viewMoreText}>View more coupons and offers</Text>
-          <Text style={styles.viewMoreArrow}>›</Text>
-        </Pressable>
+          {/* 4. Savings info section (conditional) */}
+          {appliedCoupon && (
+            <>
+              <View style={styles.savingsInfo}>
+                <Text style={styles.savingsInfoText}>🎉</Text>
+                <Text style={styles.savingsInfoText}>
+                  You are <Text style={styles.highlightedText}>saving ₹{appliedCoupon.discount}</Text> with this coupon
+                </Text>
+                <Text style={styles.savingsInfoText}>🎉</Text>
+              </View>
+              {/* Dashed line */}
+              <View style={styles.dashedLine} />
+            </>
+          )}
+
+          {/* 5. View more link section */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.viewMoreLink,
+              pressed && styles.viewMoreLinkPressed,
+            ]}
+            onPress={handleViewMoreCoupons}
+          >
+            <Text style={styles.viewMoreText}>View more coupons and offers</Text>
+            <Entypo name="chevron-right" size={16} color={Colors.textSecondary} />
+          </Pressable>
+        </CardWrapper>
 
         {/* Cashback Promotion Banner */}
         <CashbackBanner
@@ -415,62 +429,65 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     marginBottom: Spacing.lg,
   },
+  dashedLine: {
+    height: 1,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: '#D4D4D4',
+    marginVertical: Spacing.md,
+  },
   couponHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.md,
     gap: Spacing.sm,
   },
   couponHeaderText: {
-    ...Typography.body,
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#00ACC1',
+    fontSize: 14,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
+    color: '#0C748C',
   },
   couponHeaderIcon: {
     fontSize: 16,
   },
   couponScroll: {
     paddingRight: Spacing.lg,
+    paddingVertical: Spacing.md,
+    paddingLeft: 4
   },
-  appliedCouponBanner: {
+  savingsInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFF3E0',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: 8,
-    marginBottom: Spacing.md,
     gap: Spacing.xs,
   },
-  appliedCouponText: {
-    ...Typography.body,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E65100',
+  savingsInfoText: {
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansRegular,
+    color: '#0C748C',
     textAlign: 'center',
+  },
+  highlightedText: {
+    fontFamily: fontFamily.plusJakartaSansMedium,
+    color: '#0C748C',
   },
   viewMoreLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.md,
-    marginBottom: Spacing.lg,
-    gap: Spacing.xs,
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.sm,
   },
   viewMoreLinkPressed: {
     opacity: 0.6,
   },
   viewMoreText: {
-    ...Typography.body,
-    fontSize: 14,
-    color: Colors.textSecondary,
+    fontSize: 12,
+    color: '#989898',
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
   },
   viewMoreArrow: {
-    fontSize: 18,
-    color: Colors.textSecondary,
+    fontSize: 20,
+    color: '#989898',
   },
   cashbackBanner: {
     marginBottom: Spacing.lg,
