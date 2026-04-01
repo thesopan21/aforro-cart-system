@@ -1,4 +1,4 @@
-import { Typography } from '@/constants/typography';
+import { fontFamily, Typography } from '@/constants/typography';
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Spacing } from '../constants/theme';
@@ -27,8 +27,8 @@ export const SavingsBanner: React.FC<SavingsBannerProps> = ({
   currencySymbol = '₹',
   message,
   style,
-  backgroundColor = '#E0F7FA',
-  textColor = '#00695C',
+  backgroundColor = '#DAF6FC',
+  textColor = '#0C748C',
 }) => {
   const displayMessage = message || `You are saving ${currencySymbol}${amount} with this order!`;
 
@@ -45,14 +45,17 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 0.5,
+    borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    boxShadow: '0px 0px 15.2px 0px #6262621F',
   },
   text: {
     ...Typography.body,
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
     textAlign: 'center',
   },
 });

@@ -263,7 +263,10 @@ const CartScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Top Savings Banner */}
-        <SavingsBanner amount={99} style={styles.savingsBanner} />
+        <SavingsBanner
+          amount={99}
+          style={styles.savingsBanner}
+        />
 
         {/* Warning/Alert Banner */}
         <AlertBanner
@@ -504,11 +507,6 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    ...Shadows.small,
   },
   content: {
     flex: 1,
