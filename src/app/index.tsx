@@ -226,8 +226,8 @@ export default function HomeScreen() {
 
         {/* Description Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Description</Text>
           <CardWrapper padding={Spacing.lg}>
+            <Text style={styles.sectionTitle}>Description</Text>
             <Text style={styles.descriptionText}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
@@ -340,7 +340,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...Typography.h3,
-    color: Colors.text,
+    color: Colors.black,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
+    fontSize: 14,
     marginBottom: Spacing.md,
   },
   horizontalScrollContent: {

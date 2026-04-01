@@ -9,6 +9,8 @@ export const Colors = {
   badge: '#008577',
   discount: '#FF5252',
   shadow: '#000000',
+  black: '#000000',
+  white: '#FFFFFF',
 };
 
 export const Spacing = {
