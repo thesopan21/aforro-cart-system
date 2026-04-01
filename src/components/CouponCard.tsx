@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Colors, Shadows, Spacing } from '../constants/theme';
-import { Typography } from '@/constants/typography';
+import { fontFamily, Typography } from '@/constants/typography';
 
 export interface Coupon {
   id: string;
@@ -47,115 +47,109 @@ export const CouponCard: React.FC<CouponCardProps> = ({
   return (
     <View style={[styles.container, style]}>
       {/* Discount Badge */}
-      <View style={styles.badgeContainer}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeAmount}>
-            {currencySymbol}{coupon.discount}
-          </Text>
-          <Text style={styles.badgeText}>OFF</Text>
-        </View>
+      <View style={styles.badge}>
+        <Text style={styles.badgeAmount}>
+          {currencySymbol}{coupon.discount}
+        </Text>
+        <Text style={styles.badgeText}>OFF</Text>
       </View>
 
       {/* Coupon Info */}
       <View style={styles.infoContainer}>
         {/* Description */}
-        <Text style={styles.description} numberOfLines={2}>
+        <Text style={styles.description} numberOfLines={3}>
           {coupon.description}
         </Text>
 
         {/* Coupon Code */}
         <Text style={styles.code}>{coupon.code}</Text>
-
-        {/* Apply Button */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            coupon.isApplied ? styles.appliedButton : styles.applyButton,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={handlePress}
-        >
-          {coupon.isApplied ? (
-            <View style={styles.appliedContent}>
-              <Text style={styles.appliedText}>✓ APPLIED</Text>
-            </View>
-          ) : (
-            <Text style={styles.applyText}>APPLY</Text>
-          )}
-        </Pressable>
       </View>
+
+      {/* Apply Button */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          coupon.isApplied ? styles.appliedButton : styles.applyButton,
+          pressed && styles.buttonPressed,
+        ]}
+        onPress={handlePress}
+      >
+        {coupon.isApplied ? (
+          <View style={styles.appliedContent}>
+            <Text style={styles.appliedText}>✓ APPLIED</Text>
+          </View>
+        ) : (
+          <Text style={styles.applyText}>APPLY</Text>
+        )}
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: 180,
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
-    ...Shadows.small,
-    marginRight: Spacing.md,
-    overflow: 'hidden',
-  },
-  badgeContainer: {
-    alignItems: 'center',
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.sm,
+    width: 104,
+    height: 154,
+    borderRadius: 14,
+    borderWidth: 0.5,
+    borderColor: '#E7E7E7',
+    marginRight: 8,
+    justifyContent: 'space-between',
   },
   badge: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    position: 'absolute',
+    top: -22,
+    alignSelf: 'center',
+    zIndex: 9999,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#00ACC1',
     alignItems: 'center',
     justifyContent: 'center',
-    ...Shadows.medium,
   },
   badgeAmount: {
-    ...Typography.body,
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 11,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
     color: '#FFFFFF',
   },
   badgeText: {
-    ...Typography.body,
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
     color: '#FFFFFF',
   },
   infoContainer: {
-    padding: Spacing.md,
-    paddingTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingTop: 30,
+    paddingBottom: Spacing.xs,
   },
   description: {
-    ...Typography.body,
-    fontSize: 11,
-    color: Colors.textSecondary,
+    fontSize: 8.6,
+    color: '#989898',
     textAlign: 'center',
-    marginBottom: Spacing.sm,
-    minHeight: 28,
+    marginBottom: 10,
+    height: 32,
   },
   code: {
-    ...Typography.body,
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.text,
+    fontSize: 10.4,
+    color: Colors.black,
     textAlign: 'center',
-    marginBottom: Spacing.md,
-    letterSpacing: 0.5,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
   },
   button: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.md,
+    paddingVertical: 10,
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   applyButton: {
-    backgroundColor: '#FF9800',
+    backgroundColor: '#FFF',
   },
   appliedButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#FF9800',
   },
   buttonPressed: {
     opacity: 0.8,
@@ -164,7 +158,7 @@ const styles = StyleSheet.create({
     ...Typography.body,
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#FF8024',
   },
   appliedContent: {
     flexDirection: 'row',

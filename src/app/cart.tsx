@@ -426,7 +426,6 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.lg,
   },
   couponSection: {
-    marginTop: Spacing.md,
     marginBottom: Spacing.lg,
   },
   dashedLine: {
@@ -452,7 +451,7 @@ const styles = StyleSheet.create({
   },
   couponScroll: {
     paddingRight: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingVertical: 24,
     paddingLeft: 4
   },
   savingsInfo: {
