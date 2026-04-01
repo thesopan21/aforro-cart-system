@@ -1,20 +1,22 @@
 
+import { appAssets } from '@/assets/images';
 import { AnimatedScrollView } from '@/components/AnimatedScrollView';
 import { CardWrapper } from '@/components/CardWrapper';
 import { DiscountBadge } from '@/components/DiscountBadge';
 import { Header } from '@/components/Header';
 import { OptionButton } from '@/components/OptionButton';
-import { ProductOptionsBottomSheet, ProductOption } from '@/components/ProductOptionsBottomSheet';
-import React, { useCallback, useRef, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, View, ViewToken } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { BorderRadius, Colors, Spacing, } from '../constants/theme';
-import { Image } from 'expo-image';
+import { ProductOption, ProductOptionsBottomSheet } from '@/components/ProductOptionsBottomSheet';
 import { Typography } from '@/constants/typography';
-import BottomSheet from '@gorhom/bottom-sheet';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
-import { appAssets } from '@/assets/images';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { Image } from 'expo-image';
+import React, { useRef, useState } from 'react';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BorderRadius, Colors, Spacing, } from '../constants/theme';
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
  * This demonstrates a product detail screen similar to the attached design
@@ -31,11 +33,13 @@ interface Product {
   image: string;
 }
 
+const { width: screenWidth } = Dimensions.get('window');
+
 export default function HomeScreen() {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const imageCarouselRef = useRef<FlatList>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const progressValue = useSharedValue<number>(0);
 
   // Sample product options
   const productOptions: ProductOption[] = [
@@ -80,27 +84,6 @@ export default function HomeScreen() {
     appAssets.itemImage,
     appAssets.itemImage,
   ];
-
-  // Handle viewable items change for pagination
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    if (viewableItems.length > 0 && viewableItems[0].index !== null) {
-      setCurrentImageIndex(viewableItems[0].index);
-    }
-  }, []);
-
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 10,
-    minimumViewTime: 100,
-  }).current;
-
-  // Fallback handler for scroll end to ensure last item is detected
-  const handleScrollEnd = useCallback((event: any) => {
-    const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / 200);
-    if (index >= 0 && index < productImages.length) {
-      setCurrentImageIndex(index);
-    }
-  }, [productImages.length]);
 
   const mainProduct: Product = {
     id: '1',
@@ -152,7 +135,7 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Main Product Card */}
-        <CardWrapper  style={styles.mainProductCard}>
+        <CardWrapper style={styles.mainProductCard}>
           {/* Discount Badge */}
           <DiscountBadge
             discount={mainProduct.discount}
@@ -161,42 +144,43 @@ export default function HomeScreen() {
 
           {/* Product Image Carousel */}
           <View style={styles.imageCarouselContainer}>
-            <FlatList
-              ref={imageCarouselRef}
+            <Carousel
+              loop
+              width={screenWidth - 32}
+              height={280}
               data={productImages}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
+              scrollAnimationDuration={300}
+              onSnapToItem={(index) => setCurrentImageIndex(index)}
+              onProgressChange={progressValue}
               renderItem={({ item }) => (
-                <Image
-                  source={item}
-                  style={styles.productImage}
-                  contentFit="contain"
-                />
+                <View style={styles.carouselItem}>
+                  <Image
+                    source={item}
+                    style={styles.productImage}
+                    contentFit="contain"
+                  />
+                </View>
               )}
-              onViewableItemsChanged={onViewableItemsChanged}
-              viewabilityConfig={viewabilityConfig}
-              onMomentumScrollEnd={handleScrollEnd}
-              getItemLayout={(data, index) => ({
-                length: 200,
-                offset: 200 * index,
-                index,
-              })}
             />
 
             {/* Pagination Dots */}
-            <View style={styles.paginationContainer}>
-              {productImages.map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.paginationDot,
-                    currentImageIndex === index && styles.paginationDotActive,
-                  ]}
-                />
-              ))}
-            </View>
+            <Pagination.Basic
+              progress={progressValue}
+              data={productImages}
+              dotStyle={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: Colors.border,
+              }}
+              activeDotStyle={{
+                backgroundColor: '#FF9800',
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+              }}
+              containerStyle={styles.paginationContainer}
+            />
           </View>
 
           {/* Product Details */}
@@ -225,17 +209,6 @@ export default function HomeScreen() {
               onPress={handleOpenBottomSheet}
             />
           </View>
-          {/* Quantity Stepper Example */}
-          {/* <View style={styles.quantitySection}>
-            <QuantityStepper
-              value={quantity}
-              onIncrease={() => setQuantity(quantity + 1)}
-              onDecrease={() => setQuantity(quantity - 1)}
-              min={1}
-              max={10}
-              size="medium"
-            />
-          </View> */}
         </CardWrapper>
 
         {/* Similar Products Section */}
@@ -326,11 +299,18 @@ const styles = StyleSheet.create({
   imageCarouselContainer: {
     width: '100%',
     alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
     marginVertical: Spacing.lg,
   },
+  carouselItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   productImage: {
-    width: 200,
-    height: 230,
+    width: '100%',
+    height: '100%',
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -338,18 +318,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.xs,
     marginTop: Spacing.md,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: Colors.border,
-  },
-  paginationDotActive: {
-    backgroundColor: '#FF9800',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
   },
   brandText: {
     ...Typography.bodySmall,
