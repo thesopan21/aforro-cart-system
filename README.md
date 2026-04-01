@@ -6,9 +6,6 @@ A production-ready e-commerce mobile application built with React Native and Exp
 
 Aforro Cart System is a full-featured shopping cart and checkout application designed for quick commerce platforms. It provides users with an intuitive interface to browse products, manage cart items, apply coupons, select delivery addresses, and track savings—all while offering real-time serviceability checks and delivery options.
 
-**Target Users:** Online shoppers looking for fast, convenient grocery and product delivery.
-
-**Use Case:** Quick commerce and grocery delivery platforms requiring robust cart management and checkout flows.
 
 ## Features
 
@@ -197,20 +194,6 @@ The application currently uses **mock data and simulated API calls** for develop
 - `/src/data/` - Static product data
 - `/src/hooks/useServiceability.ts` - Simulated delivery checks
 - `/src/hooks/useAuth.ts` - Mock authentication
-
-### Production Integration Strategy
-
-**Base URL Configuration**
-```typescript
-// config/api.ts (to be created)
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.aforro.com';
-```
-
-**Error Handling Pattern**
-- Centralized error interceptor for HTTP clients
-- User-friendly error messages via AlertBanner component
-- Retry logic for failed requests
-- Offline mode detection
 
 **Data Flow**
 ```
