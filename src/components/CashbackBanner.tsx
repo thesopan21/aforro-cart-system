@@ -2,6 +2,8 @@ import { Typography } from '@/constants/typography';
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { BorderRadius, Colors, Spacing } from '../constants/theme';
+import { Image } from 'expo-image';
+import { appAssets } from '@/assets/images';
 
 export interface CashbackBannerProps {
   /** Amount needed to qualify for cashback */
@@ -35,21 +37,22 @@ export const CashbackBanner: React.FC<CashbackBannerProps> = ({
   subtitle = 'No coupon needed',
   style,
   currencySymbol = '₹',
-  backgroundColor = '#F5F9FF',
-  borderColor = '#E3F2FD',
-  iconBackgroundColor = '#2196F3',
+  backgroundColor = '#FFFFFF',
+  borderColor = '#E0E0E0',
+  iconBackgroundColor = '#1E88E5',
 }) => {
   const displayMessage =
     message ||
     `Add items worth ${currencySymbol}${amountNeeded} more to get ${cashbackPercentage}% cashback`;
 
   return (
-    <View style={[styles.container, { backgroundColor, borderColor }, style]}>
+    <View style={[styles.container]}>
       {/* Icon */}
-      <View style={[styles.iconContainer, { backgroundColor: iconBackgroundColor }]}>
-        <View style={styles.iconBadge}>
-          <Text style={styles.iconText}>💰</Text>
-        </View>
+      <View style={styles.iconWrapper}>
+        <Image
+          source={appAssets.cashBackOfferIcon}
+          style={styles.icon}
+        />
       </View>
 
       {/* Text Content */}
@@ -65,39 +68,57 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
     gap: Spacing.md,
   },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  iconWrapper: {
+    position: 'relative',
+    width: 56,
+    height: 56,
+  },
+  icon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconBadge: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  iconTextTop: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
-  iconText: {
-    fontSize: 24,
+  iconTextBottom: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+    marginTop: -2,
+  },
+  indicator: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#4CAF50',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   textContainer: {
     flex: 1,
   },
   message: {
     ...Typography.body,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: Colors.text,
     marginBottom: 2,
   },
   subtitle: {
     ...Typography.body,
-    fontSize: 11,
+    fontSize: 12,
     color: Colors.textSecondary,
   },
 });

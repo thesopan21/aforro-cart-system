@@ -331,11 +331,13 @@ const CartScreen = () => {
         </CardWrapper>
 
         {/* Cashback Promotion Banner */}
-        <CashbackBanner
-          amountNeeded={45}
-          cashbackPercentage={1}
-          style={styles.cashbackBanner}
-        />
+        <CardWrapper>
+          <CashbackBanner
+            amountNeeded={45}
+            cashbackPercentage={1}
+            style={styles.cashbackBanner}
+          />
+        </CardWrapper>
       </ScrollView>
 
       {/* Delivery Info Banner - Fixed below header */}
