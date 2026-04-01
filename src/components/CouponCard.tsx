@@ -65,6 +65,19 @@ export const CouponCard: React.FC<CouponCardProps> = ({
         <Text style={styles.code}>{coupon.code}</Text>
       </View>
 
+      <View style={styles.separatorContainer}>
+        <View style={styles.notchLeft} />
+
+        {/* Dashed line */}
+        {
+          !coupon.isApplied && (
+            <View style={styles.dashedLine} />
+          )
+        }
+
+        <View style={styles.notchRight} />
+
+      </View>
       {/* Apply Button */}
       <Pressable
         style={({ pressed }) => [
@@ -136,6 +149,39 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: fontFamily.plusJakartaSansSemiBold,
   },
+  separatorContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    overflow: 'hidden',
+  },
+  notchLeft: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#D9D9D9',
+    position: 'absolute',
+    top: 0,
+    left: -8,
+  },
+  notchRight: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#D9D9D9',
+    position: 'absolute',
+    top: 0,
+    right: -8,
+  },
+  dashedLine: {
+    height: 1,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: '#D4D4D4',
+  },
   button: {
     paddingVertical: 10,
     borderBottomLeftRadius: 14,
@@ -155,7 +201,6 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   applyText: {
-    ...Typography.body,
     fontSize: 13,
     fontWeight: 'bold',
     color: '#FF8024',
