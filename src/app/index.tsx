@@ -17,21 +17,12 @@ import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BorderRadius, Colors, Spacing, } from '../constants/theme';
+import { Product } from '@/types/product';
+import { similarProducts } from '@/data/similarProducts';
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
  * This demonstrates a product detail screen similar to the attached design
  */
-
-interface Product {
-  id: string;
-  name: string;
-  brand: string;
-  price: number;
-  originalPrice: number;
-  discount: number;
-  weight: string;
-  image: string;
-}
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -95,29 +86,6 @@ export default function HomeScreen() {
     weight: '64 g',
     image: 'https://via.placeholder.com/300',
   };
-
-  const similarProducts: Product[] = [
-    {
-      id: '2',
-      name: 'Gold Premium Assam Tea Rich...',
-      brand: 'Tata Tea',
-      price: 444,
-      originalPrice: 444,
-      discount: 52,
-      weight: '1kg',
-      image: 'https://via.placeholder.com/150',
-    },
-    {
-      id: '3',
-      name: 'Gold Premium Assam Tea Rich...',
-      brand: 'Tata Tea',
-      price: 444,
-      originalPrice: 444,
-      discount: 52,
-      weight: '1kg',
-      image: 'https://via.placeholder.com/150',
-    },
-  ];
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
@@ -223,7 +191,7 @@ export default function HomeScreen() {
 
                 {/* Product Image */}
                 <Image
-                  source={{ uri: product.image }}
+                  source={product.image}
                   style={styles.smallProductImage}
                   contentFit="contain"
                 />
