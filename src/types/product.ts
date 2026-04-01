@@ -7,5 +7,5 @@ export interface Product {
   originalPrice: number;
   discount: number;
   weight: string;
-  image: string;
+  image: string[]; // Can be a single image URL or an array of image URLs
 }

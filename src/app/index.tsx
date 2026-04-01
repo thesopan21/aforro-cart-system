@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BorderRadius, Colors, Spacing, } from '../constants/theme';
 import { Product } from '@/types/product';
 import { similarProducts } from '@/data/similarProducts';
+import { mainProduct } from '@/data/product';
 /**
  * Example usage of AnimatedScrollView and CardWrapper components
  * This demonstrates a product detail screen similar to the attached design
@@ -69,23 +70,7 @@ export default function HomeScreen() {
     // Add your logic here (e.g., add to cart)
   };
 
-  // Product images array
-  const productImages = [
-    appAssets.itemImage,
-    appAssets.itemImage,
-    appAssets.itemImage,
-  ];
 
-  const mainProduct: Product = {
-    id: '1',
-    name: 'Dairy milk Silk Chocolate Bar',
-    brand: 'Cadbury',
-    price: 444,
-    originalPrice: 444,
-    discount: 52,
-    weight: '64 g',
-    image: 'https://via.placeholder.com/300',
-  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
@@ -116,11 +101,11 @@ export default function HomeScreen() {
               loop
               width={screenWidth - 32}
               height={280}
-              data={productImages}
+              data={mainProduct.image}
               scrollAnimationDuration={300}
               onSnapToItem={(index) => setCurrentImageIndex(index)}
               onProgressChange={progressValue}
-              renderItem={({ item }) => (
+              renderItem={({ item } : { item: string }) => (
                 <View style={styles.carouselItem}>
                   <Image
                     source={item}
@@ -134,7 +119,7 @@ export default function HomeScreen() {
             {/* Pagination Dots */}
             <Pagination.Basic
               progress={progressValue}
-              data={productImages}
+              data={mainProduct.image}
               dotStyle={{
                 width: 8,
                 height: 8,

@@ -1,7 +1,11 @@
 import { appAssets } from "@/assets/images";
 import { Product } from "@/types/product";
 
-
+const productImages = [
+  appAssets.similarItem1,
+  appAssets.similarItem1,
+  appAssets.similarItem1,
+];
 
 export const similarProducts: Product[] = [
   {
@@ -12,7 +16,7 @@ export const similarProducts: Product[] = [
     originalPrice: 499,
     discount: 52,
     weight: '1kg',
-    image: appAssets.similarItem1,
+    image: productImages,
   },
   {
     id: '3',
@@ -22,7 +26,7 @@ export const similarProducts: Product[] = [
     originalPrice: 499,
     discount: 52,
     weight: '1kg',
-    image: appAssets.similarItem1,
+    image: productImages,
   },
   {
     id: '4',
@@ -32,6 +36,6 @@ export const similarProducts: Product[] = [
     originalPrice: 499,
     discount: 52,
     weight: '1kg',
-    image: appAssets.similarItem1,
+    image: productImages,
   },
 ];
