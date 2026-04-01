@@ -1,27 +1,28 @@
 import { AddressBottomSheet, SavedAddress } from '@/components/AddressBottomSheet';
 import { AlertBanner } from '@/components/AlertBanner';
+import { CardWrapper } from '@/components/CardWrapper';
 import { CartItemCard } from '@/components/CartItemCard';
 import { CashbackBanner } from '@/components/CashbackBanner';
 import { Coupon, CouponCard } from '@/components/CouponCard';
 import { DeliveryInfoBanner, DeliveryType } from '@/components/DeliveryInfoBanner';
+import { DeliveryInstructions, DeliveryInstructionsState } from '@/components/DeliveryInstructions';
 import { Header } from '@/components/Header';
 import { RecommendationCard, } from '@/components/RecommendationCard';
 import { SavingsBanner } from '@/components/SavingsBanner';
 import { fontFamily, Typography } from '@/constants/typography';
+import { recommendationProducts } from '@/data/recommendedProduct';
 import { useAuth } from '@/hooks/useAuth';
 import { ServiceabilityStatus, useServiceability } from '@/hooks/useServiceability';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { updateQuantity } from '@/store/slices/cartSlice';
+import Entypo from '@expo/vector-icons/Entypo';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Shadows, Spacing } from '../constants/theme';
-import Entypo from '@expo/vector-icons/Entypo';
-import { CardWrapper } from '@/components/CardWrapper';
-import { recommendationProducts } from '@/data/recommendedProduct';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 const CartScreen = () => {
   const router = useRouter();
@@ -65,7 +66,7 @@ const CartScreen = () => {
   ]);
 
   // Delivery instructions state
-  const [deliveryInstructions, setDeliveryInstructions] = useState({
+  const [deliveryInstructions, setDeliveryInstructions] = useState<DeliveryInstructionsState>({
     dontRing: false,
     dontCall: false,
     leaveWithGuard: false,
@@ -108,13 +109,6 @@ const CartScreen = () => {
   };
 
   const appliedCoupon = coupons.find(c => c.isApplied);
-
-  const toggleDeliveryInstruction = (key: keyof typeof deliveryInstructions) => {
-    setDeliveryInstructions(prev => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
 
   const handleQuantityIncrease = (itemId: string) => {
     const item = cartItems.find(i => i.id === itemId);
@@ -331,11 +325,19 @@ const CartScreen = () => {
         </CardWrapper>
 
         {/* Cashback Promotion Banner */}
-        <CardWrapper>
+        <CardWrapper style={styles.cashbackSection}>
           <CashbackBanner
             amountNeeded={45}
             cashbackPercentage={1}
             style={styles.cashbackBanner}
+          />
+        </CardWrapper>
+
+        {/* Delivery Instructions Section */}
+        <CardWrapper style={styles.deliverySection}>
+          <DeliveryInstructions
+            instructions={deliveryInstructions}
+            onChange={setDeliveryInstructions}
           />
         </CardWrapper>
       </ScrollView>
@@ -430,6 +432,9 @@ const styles = StyleSheet.create({
   couponSection: {
     marginBottom: Spacing.lg,
   },
+  cashbackSection:{
+    marginBottom: Spacing.lg,
+  },
   dashedLine: {
     height: 1,
     borderStyle: 'dashed',
@@ -503,24 +508,6 @@ const styles = StyleSheet.create({
   },
   deliverySection: {
     marginBottom: Spacing.lg,
-  },
-  chipsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  customInput: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    ...Typography.body,
-    fontSize: 13,
-    color: Colors.text,
-    minHeight: 60,
-    textAlignVertical: 'top',
   },
   priceSection: {
     marginBottom: Spacing.lg,
