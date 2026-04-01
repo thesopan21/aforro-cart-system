@@ -6,7 +6,7 @@ import { DiscountBadge } from '@/components/DiscountBadge';
 import { Header } from '@/components/Header';
 import { OptionButton } from '@/components/OptionButton';
 import { ProductOption, ProductOptionsBottomSheet } from '@/components/ProductOptionsBottomSheet';
-import { Typography } from '@/constants/typography';
+import { fontFamily, Typography } from '@/constants/typography';
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -185,16 +185,9 @@ export default function HomeScreen() {
 
           {/* Product Details */}
           <Text style={styles.brandText}>{mainProduct.brand}</Text>
-          <Text style={styles.productName}>{mainProduct.name}</Text>
-          <View style={{
-            flexDirection: 'row',
-            gap: Spacing.sm,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <View style={{
-              justifyContent: 'center',
-            }}>
+          <Text style={styles.productName} numberOfLines={2}>{mainProduct.name}</Text>
+          <View style={styles.productDetailsRow}>
+            <View style={styles.weightPriceContainer}>
               <Text style={styles.weight}>{mainProduct.weight}</Text>
               {/* Price Section */}
               <View style={styles.priceContainer}>
@@ -322,17 +315,21 @@ const styles = StyleSheet.create({
   brandText: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansRegular,
     marginBottom: Spacing.xs,
   },
   productName: {
     ...Typography.h3,
     color: Colors.text,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
     marginBottom: Spacing.xs,
   },
   weight: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
-    // marginBottom: Spacing.md,
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansRegular,
   },
   priceContainer: {
     flexDirection: 'row',
@@ -343,11 +340,24 @@ const styles = StyleSheet.create({
   price: {
     ...Typography.h3,
     color: Colors.text,
+    fontSize: 14,
+    fontFamily: fontFamily.plusJakartaSansSemiBold,
   },
   originalPrice: {
     ...Typography.bodySmall,
     color: Colors.textSecondary,
+    fontSize: 12,
+    fontFamily: fontFamily.plusJakartaSansRegular,
     textDecorationLine: 'line-through',
+  },
+  productDetailsRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  weightPriceContainer: {
+    justifyContent: 'center',
   },
   quantitySection: {
     marginTop: Spacing.md,

@@ -4,7 +4,7 @@ export const Colors = {
   background: '#FFFFFF',
   cardBackground: '#FFFFFF',
   text: '#222222',
-  textSecondary: '#757575',
+  textSecondary: '#ACACAC',
   border: '#E0E0E0',
   badge: '#008577',
   discount: '#FF5252',
