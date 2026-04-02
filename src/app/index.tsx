@@ -1,6 +1,6 @@
-
 import { AnimatedScrollView } from '@/components/AnimatedScrollView';
 import { CardWrapper } from '@/components/CardWrapper';
+import { CartIcon } from '@/components/CartIcon';
 import { DiscountBadge } from '@/components/DiscountBadge';
 import { Header } from '@/components/Header';
 import { OptionButton } from '@/components/OptionButton';

@@ -14,8 +14,8 @@ import { fontFamily, Typography } from '@/constants/typography';
 import { recommendationProducts } from '@/data/recommendedProduct';
 import { useAuth } from '@/hooks/useAuth';
 import { ServiceabilityStatus, useServiceability } from '@/hooks/useServiceability';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { updateQuantity } from '@/store/slices/cartSlice';
+import { useCart } from '@/hooks/useCart';
+import { CartItem } from '@/store/slices/cartSlice';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -27,8 +27,7 @@ import { Colors, Shadows, Spacing } from '../constants/theme';
 
 const CartScreen = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const cartItems = useAppSelector((state) => state.cart.items);
+  const { cartItems, incrementQuantity, decrementQuantity, totalPrice, totalSavings } = useCart();
   const addressBottomSheetRef = useRef<BottomSheet>(null);
   const { checkServiceability, loading: checkingServiceability } = useServiceability();
   const { isLoggedIn, login } = useAuth();
@@ -111,34 +110,23 @@ const CartScreen = () => {
 
   const appliedCoupon = coupons.find(c => c.isApplied);
 
-  // Calculate cart totals
-  const itemTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const itemSavings = cartItems.reduce((sum, item) => {
-    if (item.originalPrice && item.originalPrice > item.price) {
-      return sum + ((item.originalPrice - item.price) * item.quantity);
-    }
-    return sum;
-  }, 0);
+  // Calculate cart totals using derived state
+  const itemTotal = totalPrice;
+  const itemSavings = totalSavings;
   const couponDiscount = appliedCoupon?.discount || 0;
   const platformFee = -444; // Platform fee waiver or discount
   const deliveryFee = selectedAddress && serviceabilityStatus?.isServiceable ? 0 : null;
   const totalPayable = deliveryFee !== null 
     ? itemTotal - couponDiscount + platformFee + deliveryFee
     : null;
-  const totalSavings = itemSavings + couponDiscount + (platformFee < 0 ? Math.abs(platformFee) : 0);
+  const totalSavingsAmount = itemSavings + couponDiscount + (platformFee < 0 ? Math.abs(platformFee) : 0);
 
   const handleQuantityIncrease = (itemId: string) => {
-    const item = cartItems.find(i => i.id === itemId);
-    if (item) {
-      dispatch(updateQuantity({ id: itemId, quantity: item.quantity + 1 }));
-    }
+    incrementQuantity(itemId);
   };
 
   const handleQuantityDecrease = (itemId: string) => {
-    const item = cartItems.find(i => i.id === itemId);
-    if (item) {
-      dispatch(updateQuantity({ id: itemId, quantity: item.quantity - 1 }));
-    }
+    decrementQuantity(itemId);
   };
 
   const handleOpenAddressBottomSheet = () => {
@@ -252,7 +240,7 @@ const CartScreen = () => {
 
         {/* Cart Items List */}
         <CardWrapper style={styles.mainProductCard}>
-          {cartItems.map((item) => (
+          {cartItems.map((item: CartItem) => (
             <CartItemCard
               key={item.id}
               item={item}
@@ -367,7 +355,7 @@ const CartScreen = () => {
             discount={couponDiscount}
             platformFee={platformFee}
             total={totalPayable}
-            totalSavings={totalSavings}
+            totalSavings={totalSavingsAmount}
             hasAddress={!!selectedAddress}
           />
         </CardWrapper>

@@ -1,3 +1,4 @@
+import { loadCartFromStorage } from '@/store/middleware/cartPersistence';
 import { store } from '@/store/store';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -25,6 +26,11 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
+
+  // Load cart from storage on app startup
+  useEffect(() => {
+    loadCartFromStorage(store.dispatch);
+  }, []);
 
   if (!fontsLoaded && !fontError) {
     return null;

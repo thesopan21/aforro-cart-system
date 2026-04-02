@@ -1,6 +1,5 @@
 import { Typography } from '@/constants/typography';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addToCart, updateQuantity } from '@/store/slices/cartSlice';
+import { useCart } from '@/hooks/useCart';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import React, { forwardRef, useCallback, useMemo } from 'react';
@@ -33,12 +32,7 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
   ({
     title = 'Select Options', options, onSelectOption, confirmButtonText = 'Go to Cart', enableCartNavigation = true, productImage }, ref) => {
     const router = useRouter();
-    const dispatch = useAppDispatch();
-    const cartItems = useAppSelector((state) => state.cart.items);
-
-    const [quantities, setQuantities] = React.useState<{ [key: string]: number }>(
-      options.reduce((acc, option) => ({ ...acc, [option.id]: 1 }), {})
-    );
+    const { addToCart, incrementQuantity, decrementQuantity, getItemQuantity, totalItems } = useCart();
 
     const snapPoints = useMemo(() => ['50%', '75%'], []);
 
@@ -54,34 +48,20 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
       []
     );
 
-    const handleQuantityChange = (optionId: string, newQuantity: number) => {
-      setQuantities((prev) => ({ ...prev, [optionId]: newQuantity }));
-    };
-
     const handleAddToCart = (option: ProductOption) => {
       if (option.available) {
-        dispatch(addToCart({
+        addToCart({
           id: option.id,
           name: option.name,
           price: option.price,
           originalPrice: option.originalPrice,
-          quantity: 1,
           weight: option.weight,
           image: productImage,
-        }));
+        });
         if (onSelectOption) {
           onSelectOption(option, 1);
         }
       }
-    };
-
-    const handleUpdateQuantity = (optionId: string, newQuantity: number) => {
-      dispatch(updateQuantity({ id: optionId, quantity: newQuantity }));
-    };
-
-    const getCartItemQuantity = (optionId: string): number => {
-      const cartItem = cartItems.find(item => item.id === optionId);
-      return cartItem ? cartItem.quantity : 0;
     };
 
     const handleConfirm = () => {
@@ -133,15 +113,11 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
                 </View>
 
                 <View style={styles.optionActions}>
-                  {getCartItemQuantity(option.id) > 0 ? (
+                  {getItemQuantity(option.id) > 0 ? (
                     <QuantityStepper
-                      value={getCartItemQuantity(option.id)}
-                      onIncrease={() =>
-                        handleUpdateQuantity(option.id, getCartItemQuantity(option.id) + 1)
-                      }
-                      onDecrease={() =>
-                        handleUpdateQuantity(option.id, getCartItemQuantity(option.id) - 1)
-                      }
+                      value={getItemQuantity(option.id)}
+                      onIncrease={() => incrementQuantity(option.id)}
+                      onDecrease={() => decrementQuantity(option.id)}
                       min={0}
                       max={10}
                       size="small"
@@ -172,14 +148,14 @@ export const ProductOptionsBottomSheet = forwardRef<BottomSheet, ProductOptionsB
           </View>
 
           {/* Confirm Button */}
-          {enableCartNavigation && cartItems.length > 0 && (
+          {enableCartNavigation && totalItems > 0 && (
             <View style={styles.confirmButtonContainer}>
               <Pressable
                 style={styles.confirmButton}
                 onPress={handleConfirm}
               >
                 <Text style={styles.confirmButtonText}>
-                  {confirmButtonText} ({cartItems.length} item{cartItems.length > 1 ? 's' : ''})
+                  {confirmButtonText} ({totalItems} item{totalItems > 1 ? 's' : ''})
                 </Text>
               </Pressable>
             </View>
