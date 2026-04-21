@@ -4,6 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 
 import { Colors, Spacing } from '../constants/theme';
 import { Typography } from '../constants/typography';
 import { LocationCoordinates, useLocation } from '../hooks/useLocation';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export interface SavedAddress {
   id: string;
@@ -21,7 +22,7 @@ interface AddressBottomSheetProps {
 
 export const AddressBottomSheet = forwardRef<BottomSheet, AddressBottomSheetProps>(
   ({ onAddressSelect, onAddressAdd }, ref) => {
-    const snapPoints = useMemo(() => ['35%', '70%'], []);
+    const snapPoints = useMemo(() => ['35%', '50%'], []);
     const {
       permissionStatus,
       loading: locationLoading,
@@ -110,7 +111,7 @@ export const AddressBottomSheet = forwardRef<BottomSheet, AddressBottomSheetProp
             onPress={handleUseCurrentLocation}
             disabled={locationLoading}
           >
-            <Text style={styles.iconEmojiSmall}>📍</Text>
+            <MaterialCommunityIcons name='map' size={24} color={Colors.primary} />
             <Text style={styles.locationButtonText}>
               {locationLoading ? 'Detecting location...' : 'Use my current location'}
             </Text>
@@ -162,33 +163,6 @@ export const AddressBottomSheet = forwardRef<BottomSheet, AddressBottomSheetProp
             />
           </View>
 
-          {/* Address Type Selection */}
-          <View style={styles.typeSection}>
-            <Text style={styles.sectionLabel}>Save as</Text>
-            <View style={styles.typeButtons}>
-              {(['home', 'work', 'other'] as const).map((type) => (
-                <Pressable
-                  key={type}
-                  style={({ pressed }) => [
-                    styles.typeButton,
-                    selectedType === type && styles.typeButtonSelected,
-                    pressed && styles.typeButtonPressed,
-                  ]}
-                  onPress={() => setSelectedType(type)}
-                >
-                  <Text
-                    style={[
-                      styles.typeButtonText,
-                      selectedType === type && styles.typeButtonTextSelected,
-                    ]}
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
           {/* Save Button */}
           <Pressable
             style={({ pressed }) => [
@@ -222,7 +196,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xxl,
+    marginTop: 12,
   },
   iconEmoji: {
     fontSize: 24,
@@ -285,6 +260,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.text,
     marginBottom: Spacing.md,
+    textAlign:'center'
   },
   input: {
     borderWidth: 1,

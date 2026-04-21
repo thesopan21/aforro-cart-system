@@ -396,7 +396,7 @@ const CartScreen = () => {
       />
 
       {/* Proceed Button - Fixed at bottom */}
-      <View style={styles.proceedContainer}>
+      {/* <View style={styles.proceedContainer}>
         <View style={styles.proceedTopSection}>
           <View>
             <Text style={styles.toPayLabel}>To Pay</Text>
@@ -425,7 +425,7 @@ const CartScreen = () => {
             </Text>
           </Pressable>
         </View>
-      </View>
+      </View> */}
 
       {/* Address Bottom Sheet */}
       <AddressBottomSheet
