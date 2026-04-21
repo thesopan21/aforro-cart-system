@@ -122,9 +122,7 @@ const CartScreen = () => {
   const couponDiscount = appliedCoupon?.discount || 0;
   const platformFee = -444; // Platform fee waiver or discount
   const deliveryFee = selectedAddress && serviceabilityStatus?.isServiceable ? 0 : null;
-  const totalPayable = deliveryFee !== null 
-    ? itemTotal - couponDiscount + platformFee + deliveryFee
-    : null;
+  const totalPayable = itemTotal - couponDiscount + platformFee + (deliveryFee !== null ? deliveryFee : 0);
   const totalSavings = itemSavings + couponDiscount + (platformFee < 0 ? Math.abs(platformFee) : 0);
 
   const handleQuantityIncrease = (itemId: string) => {
@@ -396,7 +394,7 @@ const CartScreen = () => {
       />
 
       {/* Proceed Button - Fixed at bottom */}
-      {/* <View style={styles.proceedContainer}>
+      <View style={styles.proceedContainer}>
         <View style={styles.proceedTopSection}>
           <View>
             <Text style={styles.toPayLabel}>To Pay</Text>
@@ -421,11 +419,11 @@ const CartScreen = () => {
             }}
           >
             <Text style={styles.proceedButtonText}>
-              {!isLoggedIn ? 'Login to continue' : 'Proceed'}
+              {'Proceed'}
             </Text>
           </Pressable>
         </View>
-      </View> */}
+      </View>
 
       {/* Address Bottom Sheet */}
       <AddressBottomSheet
@@ -601,11 +599,10 @@ const styles = StyleSheet.create({
   },
   proceedContainer: {
     backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopWidth: 0.5,
+    borderTopColor: '#E7E7E7',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    ...Shadows.small,
   },
   proceedTopSection: {
     flexDirection: 'row',
@@ -622,7 +619,7 @@ const styles = StyleSheet.create({
     ...Typography.body,
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.text,
+    color: '#1B1C1E',
   },
   proceedButton: {
     backgroundColor: Colors.primary,
