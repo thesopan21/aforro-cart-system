@@ -201,6 +201,14 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     gap: Spacing.sm,
+    
+    // iOS top shadow
+    shadowColor: '#626262',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    // Android elevation (also creates shadow)
+    elevation: -8,
   },
   leftSection: {
     flexDirection: 'row',
